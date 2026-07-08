@@ -323,6 +323,7 @@ def format_row(row: dict[str, float | int | str]) -> str:
         f"batch={row['batch_size']:>4} "
         f"items/s={row['items_per_second']:>8.2f} "
         f"wall_ms/item={row['wall_ms_per_item']:>7.2f} "
+        f"wall_s={row['wall_seconds']:>7.2f} "
         f"cpu_ms/item={row['cpu_ms_per_item']:>7.2f} "
         f"cores={row['effective_cpu_cores']:>5.2f} "
         f"rss_mb={row['rss_mb_after']:>7.1f} "
