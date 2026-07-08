@@ -51,7 +51,7 @@ MAX_SUGGESTIONS = 8
 DEFAULT_NUM_SUGGESTIONS = 5
 
 ENGINE = {
-    "en2indic": XlitEngine(beam_width=MAX_SUGGESTIONS, rescore=True, model_type="transformer", src_script_type = "roman"),
+    "en2indic": XlitEngine(beam_width=MAX_SUGGESTIONS, rescore=False, model_type="transformer", src_script_type = "roman"),
     "indic2en": XlitEngine(beam_width=MAX_SUGGESTIONS, rescore=False, model_type="transformer", src_script_type = "indic"),
 }
 
