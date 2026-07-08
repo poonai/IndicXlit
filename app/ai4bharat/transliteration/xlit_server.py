@@ -16,12 +16,18 @@ FORMAT:
     https://api.varnamproject.com/tl/hi/bharat
 """
 
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, Response, jsonify, request, make_response
 from flask_limiter import Limiter
 from uuid import uuid4
 from datetime import datetime
 import traceback
 import enum
+import os
+import subprocess
+import time
+
+import psutil
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 from .utils import LANG_CODE_TO_DISPLAY_NAME, RTL_LANG_CODES, LANG_CODE_TO_SCRIPT_CODE, GOOGLE_FONTS, FALLBACK_FONTS
 
@@ -42,6 +48,174 @@ limiter = Limiter(
     app=app,
     storage_uri="memory://",
 )
+
+PROCESS = psutil.Process(os.getpid())
+REQUEST_START = "xlit_request_start_time"
+REQUEST_CPU_START = "xlit_request_cpu_start"
+
+REQUEST_COUNT = Counter(
+    "xlit_http_requests_total",
+    "Total HTTP requests handled by the transliteration API.",
+    ["method", "endpoint", "status"],
+)
+REQUEST_LATENCY = Histogram(
+    "xlit_http_request_duration_seconds",
+    "Wall-clock request latency in seconds.",
+    ["method", "endpoint"],
+    buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60),
+)
+REQUEST_CPU_TIME = Histogram(
+    "xlit_http_request_cpu_seconds",
+    "Process CPU time consumed while handling a request.",
+    ["method", "endpoint"],
+    buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30),
+)
+INFERENCE_LATENCY = Histogram(
+    "xlit_inference_duration_seconds",
+    "Model inference wall-clock latency in seconds.",
+    ["direction", "lang_code", "mode"],
+    buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60),
+)
+IN_PROGRESS = Gauge(
+    "xlit_http_requests_in_progress",
+    "Number of HTTP requests currently in progress.",
+)
+PROCESS_CPU_PERCENT = Gauge(
+    "xlit_process_cpu_percent",
+    "Current transliteration server process CPU utilization percentage.",
+)
+PROCESS_RSS_BYTES = Gauge(
+    "xlit_process_resident_memory_bytes",
+    "Resident memory used by the transliteration server process.",
+)
+PROCESS_VMS_BYTES = Gauge(
+    "xlit_process_virtual_memory_bytes",
+    "Virtual memory used by the transliteration server process.",
+)
+PROCESS_THREADS = Gauge(
+    "xlit_process_threads",
+    "Number of process threads used by the transliteration server.",
+)
+PROCESS_OPEN_FDS = Gauge(
+    "xlit_process_open_fds",
+    "Number of open file descriptors used by the transliteration server.",
+)
+GPU_UTILIZATION = Gauge(
+    "xlit_gpu_utilization_percent",
+    "GPU utilization percentage reported by nvidia-smi.",
+    ["gpu", "name"],
+)
+GPU_MEMORY_USED_BYTES = Gauge(
+    "xlit_gpu_memory_used_bytes",
+    "GPU memory used in bytes reported by nvidia-smi.",
+    ["gpu", "name"],
+)
+GPU_MEMORY_TOTAL_BYTES = Gauge(
+    "xlit_gpu_memory_total_bytes",
+    "Total GPU memory in bytes reported by nvidia-smi.",
+    ["gpu", "name"],
+)
+GPU_TEMPERATURE_CELSIUS = Gauge(
+    "xlit_gpu_temperature_celsius",
+    "GPU temperature in Celsius reported by nvidia-smi.",
+    ["gpu", "name"],
+)
+GPU_POWER_DRAW_WATTS = Gauge(
+    "xlit_gpu_power_draw_watts",
+    "GPU power draw in watts reported by nvidia-smi.",
+    ["gpu", "name"],
+)
+
+
+def _endpoint_label():
+    return request.endpoint or request.path
+
+
+def _cpu_time_seconds():
+    cpu_times = PROCESS.cpu_times()
+    return cpu_times.user + cpu_times.system
+
+
+def _collect_process_metrics():
+    with PROCESS.oneshot():
+        memory = PROCESS.memory_info()
+        PROCESS_CPU_PERCENT.set(PROCESS.cpu_percent(interval=None))
+        PROCESS_RSS_BYTES.set(memory.rss)
+        PROCESS_VMS_BYTES.set(memory.vms)
+        PROCESS_THREADS.set(PROCESS.num_threads())
+        if hasattr(PROCESS, "num_fds"):
+            PROCESS_OPEN_FDS.set(PROCESS.num_fds())
+
+
+def _collect_gpu_metrics():
+    try:
+        output = subprocess.check_output(
+            [
+                "nvidia-smi",
+                "--query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu,power.draw",
+                "--format=csv,noheader,nounits",
+            ],
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=1,
+        )
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return
+
+    for line in output.splitlines():
+        parts = [part.strip() for part in line.split(",")]
+        if len(parts) != 7:
+            continue
+        gpu, name, utilization, memory_used, memory_total, temperature, power_draw = parts
+        labels = {"gpu": gpu, "name": name}
+        try:
+            GPU_UTILIZATION.labels(**labels).set(float(utilization))
+            GPU_MEMORY_USED_BYTES.labels(**labels).set(float(memory_used) * 1024 * 1024)
+            GPU_MEMORY_TOTAL_BYTES.labels(**labels).set(float(memory_total) * 1024 * 1024)
+            GPU_TEMPERATURE_CELSIUS.labels(**labels).set(float(temperature))
+            GPU_POWER_DRAW_WATTS.labels(**labels).set(float(power_draw))
+        except ValueError:
+            continue
+
+
+def _time_inference(direction, lang_code, mode, fn):
+    start = time.perf_counter()
+    try:
+        return fn()
+    finally:
+        INFERENCE_LATENCY.labels(direction, lang_code, mode).observe(time.perf_counter() - start)
+
+
+@app.before_request
+def record_request_start():
+    if request.endpoint == "metrics":
+        return
+    request.environ[REQUEST_START] = time.perf_counter()
+    request.environ[REQUEST_CPU_START] = _cpu_time_seconds()
+    IN_PROGRESS.inc()
+
+
+@app.after_request
+def record_request_metrics(response):
+    if request.endpoint == "metrics":
+        return response
+    endpoint = _endpoint_label()
+    REQUEST_COUNT.labels(request.method, endpoint, response.status_code).inc()
+    start = request.environ.get(REQUEST_START)
+    if start is not None:
+        REQUEST_LATENCY.labels(request.method, endpoint).observe(time.perf_counter() - start)
+    cpu_start = request.environ.get(REQUEST_CPU_START)
+    if cpu_start is not None:
+        REQUEST_CPU_TIME.labels(request.method, endpoint).observe(max(_cpu_time_seconds() - cpu_start, 0))
+    IN_PROGRESS.dec()
+    return response
+
+
+@app.route("/metrics", methods=["GET"])
+def metrics():
+    _collect_process_metrics()
+    _collect_gpu_metrics()
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 ## ----------------------------- Xlit Engine -------------------------------- ##
 
@@ -106,7 +280,12 @@ def xlit_api(lang_code, eng_word):
 
     try:
         ## Limit char count to --> 70
-        xlit_result = ENGINE["en2indic"].translit_word(eng_word[:70], lang_code, topk=num_suggestions, transliterate_numerals=transliterate_numerals)
+        xlit_result = _time_inference(
+            "en2indic",
+            lang_code,
+            "word",
+            lambda: ENGINE["en2indic"].translit_word(eng_word[:70], lang_code, topk=num_suggestions, transliterate_numerals=transliterate_numerals),
+        )
     except Exception as e:
         xlit_result = XlitError.internal_err
 
@@ -140,7 +319,12 @@ def reverse_xlit_api(lang_code, word):
 
     try:
         ## Limit char count to --> 70
-        xlit_result = ENGINE["indic2en"].translit_word(word[:70], lang_code, topk=num_suggestions)
+        xlit_result = _time_inference(
+            "indic2en",
+            lang_code,
+            "word",
+            lambda: ENGINE["indic2en"].translit_word(word[:70], lang_code, topk=num_suggestions),
+        )
     except Exception as e:
         xlit_result = XlitError.internal_err
 
@@ -193,10 +377,20 @@ def ulca_api():
     outputs = []
     for item in data["input"]:
         if is_sentence:
-            item["target"] = [engine.translit_sentence(item["source"], lang_code=lang_code)]
+            item["target"] = [_time_inference(
+                "indic2en" if data["config"]["language"]["targetLanguage"] == "en" else "en2indic",
+                lang_code,
+                "sentence",
+                lambda source=item["source"]: engine.translit_sentence(source, lang_code=lang_code),
+            )]
         else:
             item["source"] = item["source"][:32]
-            item["target"] = engine.translit_word(item["source"], lang_code=lang_code, topk=num_suggestions)
+            item["target"] = _time_inference(
+                "indic2en" if data["config"]["language"]["targetLanguage"] == "en" else "en2indic",
+                lang_code,
+                "word",
+                lambda source=item["source"]: engine.translit_word(source, lang_code=lang_code, topk=num_suggestions),
+            )
     
     return {
         "output": data["input"],

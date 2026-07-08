@@ -14,3 +14,5 @@ fairseq
 
 urduhack
 indic_nlp_library
+prometheus_client
+psutil
