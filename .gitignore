@@ -133,3 +133,11 @@ dmypy.json
 
 *.pt
 *.zip
+
+# TensorRT-LLM experiment build outputs and downloaded datasets.
+inference experiment/trtllm_port/artifacts/dakshina/
+inference experiment/trtllm_port/artifacts/dakshina_data/
+inference experiment/trtllm_port/artifacts/trtllm_bundle_en_hi/
+inference experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/
+inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi/
+inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4/

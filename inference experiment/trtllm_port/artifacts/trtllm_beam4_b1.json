@@ -1,0 +1,91 @@
+{
+  "created_at": "2026-07-09T09:08:11.424810+00:00",
+  "backend": "trtllm",
+  "engine_dir": "inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4",
+  "lang": "hi",
+  "beam": 4,
+  "topk": 4,
+  "postprocess": true,
+  "batch_size": 1,
+  "max_new_tokens": 32,
+  "elapsed_seconds": 0.33314271830022335,
+  "items_per_second": 3.0017165168797555,
+  "output_shape": [
+    1,
+    4,
+    33
+  ],
+  "rows": [
+    {
+      "index": 0,
+      "word": "bharat",
+      "preprocessed": "__hi__ b h a r a t",
+      "source_token_ids": [
+        38,
+        22,
+        7,
+        4,
+        9,
+        4,
+        8,
+        2
+      ],
+      "generated_token_ids": [
+        113,
+        5,
+        8,
+        18
+      ],
+      "raw_decoded_best": "भ ा र त",
+      "final_postprocessed_best": "भारत",
+      "candidates": [
+        {
+          "rank": 1,
+          "generated_token_ids": [
+            113,
+            5,
+            8,
+            18
+          ],
+          "raw_decoded": "भ ा र त",
+          "final_postprocessed": "भारत"
+        },
+        {
+          "rank": 2,
+          "generated_token_ids": [
+            113,
+            8,
+            5,
+            30,
+            5
+          ],
+          "raw_decoded": "भ र ा व ा",
+          "final_postprocessed": "भरावा"
+        },
+        {
+          "rank": 3,
+          "generated_token_ids": [
+            113,
+            8,
+            5,
+            18,
+            5
+          ],
+          "raw_decoded": "भ र ा त ा",
+          "final_postprocessed": "भराता"
+        },
+        {
+          "rank": 4,
+          "generated_token_ids": [
+            113,
+            8,
+            5,
+            72
+          ],
+          "raw_decoded": "भ र ा ह",
+          "final_postprocessed": "भराह"
+        }
+      ]
+    }
+  ]
+}

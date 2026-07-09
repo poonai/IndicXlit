@@ -1,0 +1,141 @@
+{
+  "created_at": "2026-07-09T09:12:09.040870+00:00",
+  "backend": "trtllm",
+  "engine_dir": "inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4",
+  "lang": "hi",
+  "beam": 4,
+  "topk": 4,
+  "postprocess": true,
+  "batch_size": 2,
+  "max_new_tokens": 32,
+  "elapsed_seconds": 0.36857383605092764,
+  "items_per_second": 5.426321144845589,
+  "output_shape": [
+    2,
+    4,
+    33
+  ],
+  "rows": [
+    {
+      "index": 0,
+      "word": "bharat",
+      "preprocessed": "__hi__ b h a r a t",
+      "source_token_ids": [
+        38,
+        22,
+        7,
+        4,
+        9,
+        4,
+        8,
+        2
+      ],
+      "generated_token_ids": [
+        113,
+        5,
+        8,
+        18
+      ],
+      "raw_decoded_best": "भ ा र त",
+      "final_postprocessed_best": "भारत",
+      "candidates": [
+        {
+          "rank": 1,
+          "generated_token_ids": [
+            113,
+            5,
+            8,
+            18
+          ],
+          "raw_decoded": "भ ा र त",
+          "final_postprocessed": "भारत"
+        },
+        {
+          "rank": 2,
+          "generated_token_ids": [
+            113,
+            8,
+            18
+          ],
+          "raw_decoded": "भ र त",
+          "final_postprocessed": "भरत"
+        },
+        {
+          "rank": 3,
+          "generated_token_ids": [
+            113,
+            8,
+            5,
+            89
+          ],
+          "raw_decoded": "भ र ा ट",
+          "final_postprocessed": "भराट"
+        },
+        {
+          "rank": 4,
+          "generated_token_ids": [
+            113,
+            8,
+            5,
+            18
+          ],
+          "raw_decoded": "भ र ा त",
+          "final_postprocessed": "भरात"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "word": "namaste",
+      "preprocessed": "__hi__ n a m a s t e",
+      "source_token_ids": [
+        38,
+        6,
+        4,
+        16,
+        4,
+        15,
+        8,
+        11,
+        2
+      ],
+      "generated_token_ids": [
+        14,
+        24,
+        5
+      ],
+      "raw_decoded_best": "न म ा",
+      "final_postprocessed_best": "नमा",
+      "candidates": [
+        {
+          "rank": 1,
+          "generated_token_ids": [
+            14,
+            24,
+            5
+          ],
+          "raw_decoded": "न म ा",
+          "final_postprocessed": "नमा"
+        },
+        {
+          "rank": 2,
+          "generated_token_ids": [],
+          "raw_decoded": "",
+          "final_postprocessed": ""
+        },
+        {
+          "rank": 3,
+          "generated_token_ids": [],
+          "raw_decoded": "",
+          "final_postprocessed": ""
+        },
+        {
+          "rank": 4,
+          "generated_token_ids": [],
+          "raw_decoded": "",
+          "final_postprocessed": ""
+        }
+      ]
+    }
+  ]
+}
