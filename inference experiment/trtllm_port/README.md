@@ -13,3 +13,5 @@ port of the IndicXlit Fairseq transformer. Nothing here is wired into the app.
 Artifacts are written under `inference experiment/trtllm_port/artifacts/` by
 default.
 
+For the next-agent handoff and full phase plan, read `CHAT_HANDOFF.md` first,
+then `PHASE_STATUS.md`.
