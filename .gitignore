@@ -143,6 +143,7 @@ inference experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/
 inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi/
 inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4/
 inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5/
+inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/
 inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*.json
 inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam5_eval*.json
 inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_greedy*_eval.json

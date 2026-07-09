@@ -1,0 +1,100 @@
+name: "indicxlit_tensorrt_llm"
+backend: "tensorrtllm"
+max_batch_size: 128
+
+model_transaction_policy {
+  decoupled: false
+}
+
+input [
+  { name: "input_ids" data_type: TYPE_INT32 dims: [ -1 ] allow_ragged_batch: true },
+  { name: "decoder_input_ids" data_type: TYPE_INT32 dims: [ -1 ] allow_ragged_batch: true },
+  { name: "input_lengths" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } },
+  { name: "decoder_input_lengths" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } },
+  { name: "request_output_len" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } },
+  { name: "end_id" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } },
+  { name: "pad_id" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } },
+  { name: "beam_width" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } optional: true },
+  { name: "num_return_sequences" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } optional: true },
+  { name: "return_log_probs" data_type: TYPE_BOOL dims: [ 1 ] reshape: { shape: [ ] } optional: true }
+]
+
+output [
+  { name: "output_ids" data_type: TYPE_INT32 dims: [ -1, -1 ] },
+  { name: "sequence_length" data_type: TYPE_INT32 dims: [ -1 ] },
+  { name: "cum_log_probs" data_type: TYPE_FP32 dims: [ -1 ] },
+  { name: "output_log_probs" data_type: TYPE_FP32 dims: [ -1, -1 ] }
+]
+
+parameters {
+  key: "triton_backend"
+  value: { string_value: "tensorrtllm" }
+}
+parameters {
+  key: "FORCE_CPU_ONLY_INPUT_TENSORS"
+  value: { string_value: "no" }
+}
+parameters {
+  key: "gpt_model_type"
+  value: { string_value: "inflight_fused_batching" }
+}
+parameters {
+  key: "gpt_model_path"
+  value: { string_value: "/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/decoder" }
+}
+parameters {
+  key: "encoder_model_path"
+  value: { string_value: "/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/encoder" }
+}
+parameters {
+  key: "max_beam_width"
+  value: { string_value: "5" }
+}
+parameters {
+  key: "batching_strategy"
+  value: { string_value: "inflight_fused_batching" }
+}
+parameters {
+  key: "max_queue_delay_microseconds"
+  value: { string_value: "3000" }
+}
+parameters {
+  key: "exclude_input_in_output"
+  value: { string_value: "true" }
+}
+parameters {
+  key: "enable_kv_cache_reuse"
+  value: { string_value: "false" }
+}
+parameters {
+  key: "enable_chunked_context"
+  value: { string_value: "false" }
+}
+parameters {
+  key: "kv_cache_free_gpu_mem_fraction"
+  value: { string_value: "0.8" }
+}
+parameters {
+  key: "cross_kv_cache_fraction"
+  value: { string_value: "0.5" }
+}
+parameters {
+  key: "logits_datatype"
+  value: { string_value: "TYPE_FP32" }
+}
+parameters {
+  key: "tokenizer_dir"
+  value: { string_value: "" }
+}
+parameters {
+  key: "xgrammar_tokenizer_info_path"
+  value: { string_value: "" }
+}
+parameters {
+  key: "guided_decoding_backend"
+  value: { string_value: "" }
+}
+
+instance_group [
+  { count: 1 kind: KIND_CPU }
+]

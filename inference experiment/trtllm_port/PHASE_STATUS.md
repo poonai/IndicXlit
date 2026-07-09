@@ -314,3 +314,72 @@ Known caveats before optimization:
 - The current export is fp32 and correctness-first. INT8/FP8/FP16 optimization,
   padding-removal tuning, and larger-batch throughput work are still future
   phases.
+
+## Triton TensorRT-LLM Serving Spike
+
+Status: working for local non-decoupled ensemble serving.
+
+Artifacts:
+
+- Triton prototype repo:
+  `triton_indicxlit/model_repository/`
+- Launch helper:
+  `triton_indicxlit/scripts/run_triton.sh`
+- Triton-compatible engine dir:
+  `artifacts/trtllm_engines_en_hi_beam5_triton/`
+
+Environment:
+
+- Local standalone Triton Server `2.70.0` installed at
+  `/tmp/tritonserver-2.70.0/tritonserver`.
+- Built TensorRT-LLM v1.2.1 `triton_backend/inflight_batcher_llm` locally and
+  installed:
+  - `/tmp/tritonserver-2.70.0/tritonserver/backends/tensorrtllm/libtriton_tensorrtllm.so`
+  - `/tmp/tritonserver-2.70.0/tritonserver/backends/tensorrtllm/trtllmExecutorWorker`
+- The launch helper wires the Triton process to `.venv-trtllm` libraries for
+  TensorRT-LLM, TensorRT, Torch, CUDA, cuDNN, cuBLAS, and NCCL.
+
+Engine build:
+
+- A separate beam-5 engine was required for Triton inflight batching:
+  - `remove_input_padding=enable`
+  - `kv_cache_type=paged`
+  - encoder `max_batch_size=128`, `max_input_len=128`,
+    `max_num_tokens=16384`
+  - decoder `max_batch_size=128`, `max_seq_len=64`,
+    `max_encoder_input_len=4096`, `max_num_tokens=8192`
+- The earlier correctness/parity engine remains separate because it uses
+  `remove_input_padding=disable`.
+
+Verified:
+
+- Triton loaded all models as `READY`:
+  - `indicxlit_preprocess`
+  - `indicxlit_tensorrt_llm`
+  - `indicxlit_postprocess`
+  - `indicxlit_ensemble`
+- Direct TensorRT-LLM backend request for `bharat` returned token IDs decoding
+  to `भारत`.
+- Full ensemble HTTP request returned:
+  - `text_output`: `भारत`
+  - candidates: `["भारत", "भरत", "अभारत", "बारत", "बहरत"]`
+- Concurrent HTTP probe:
+  - `16` single-item requests at concurrency `8`
+  - all completed successfully
+  - local measured rate: `38.07` items/s through HTTP + Python pre/postprocess
+  - Triton metrics after smoke tests showed `17` successful
+    `indicxlit_ensemble` requests and `17` successful
+    `indicxlit_tensorrt_llm` requests with zero failures.
+
+Serving caveat:
+
+- The current static ensemble works in non-decoupled mode and should be driven
+  with many normal single-item requests so TensorRT-LLM can schedule them
+  internally.
+- A single HTTP request carrying client-side batch tensors, such as shape
+  `[4, 1]`, is rejected by the TensorRT-LLM backend unless decoupled mode is
+  enabled.
+- Enabling decoupled mode on the core backend made Triton reject this static
+  ensemble because postprocessing combines tensors from a decoupled model with
+  other ensemble values. Supporting client-side batched tensors would need a
+  custom BLS/Python wrapper or a different decoupled model layout.

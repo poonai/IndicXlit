@@ -1,315 +1,540 @@
-# IndicXlit TensorRT-LLM Chat Handoff
+# IndicXlit TensorRT-LLM / Triton Handoff
 
-This is a curated handoff from the Codex session. It is not a verbatim chat
-transcript; it preserves the decisions, measurements, failed attempts, and next
-steps needed to continue the work.
+Last updated: 2026-07-09
 
-## Goal
+This file is the handoff for continuing the IndicXlit TensorRT-LLM port in a
+fresh instance. It records the current verified state, exact artifact paths,
+install/build requirements, commands, results, and known limitations.
 
-Port the current IndicXlit Fairseq transformer transliteration inference path to
-a TensorRT-LLM encoder-decoder experiment. Keep all work isolated in this
-workspace until correctness and performance are proven. The production Flask/app
-path should remain unchanged until the final integration phase.
+## Current State
 
-Initial target:
+The core model port is working.
 
-- Direction: `en2indic`
-- Language: Hindi (`hi`)
-- Correctness target: greedy parity first, then beam search
-- Precision target: fp32 first for parity, fp16 later only after correctness is
-  understood
+- Fairseq Hindi Dakshina README-level evaluation was verified.
+- The Fairseq checkpoint weights were converted directly to TensorRT-LLM
+  encoder/decoder checkpoints.
+- TensorRT-LLM beam-5 Dakshina parity is achieved after fixing encoder
+  attention masks.
+- A local Triton model repository exists with custom Python pre/postprocess and
+  TensorRT-LLM backend serving.
+- The `tensorrtllm` Triton backend was built locally and tested.
 
-## Why TensorRT-LLM
+Do not treat the early parts of this project as speculative anymore. The
+important remaining questions are serving shape, operational packaging, and
+optimization.
 
-The main bottleneck is not model size or GPU memory. The model is small:
+## Key Paths
 
-- 6 encoder layers
-- 6 decoder layers
-- hidden dim 256
-- FFN dim 1024
-- 4 attention heads
-- char-level target vocab around 806 symbols
-- Fairseq checkpoint around 138 MB
-
-The bottleneck is the autoregressive decode loop:
+Workspace:
 
 ```text
-for each output step:
-    decoder forward
-    log_softmax
-    topk / beam select
-    reorder incremental state
-    finalize EOS candidates
+/IndicXlit/inference experiment/trtllm_port/
 ```
 
-Fairseq runs a lot of this loop through Python and generic beam-search
-bookkeeping. GPU utilization stayed low because the GPU receives many small
-bursts of work and waits between decode steps. TensorRT-LLM is relevant because
-it can own the encoder-decoder generation loop, KV-cache management, and beam
-search in optimized runtime code.
-
-## Measurements and Experiments Already Done
-
-### CPU/Fairseq Baseline
-
-Before CUDA was enabled, direct batch decode on CPU plateaued roughly around
-120-135 items/s depending on batch size. Flask/gevent queued concurrent requests
-because the process was compute-bound and the app did not batch HTTP requests.
-
-### CUDA Setup
-
-The original `.venv` was CPU-only PyTorch. It was updated to:
-
-- `torch 2.12.1+cu130`
-- `torch.version.cuda = 13.0`
-- `torch.cuda.is_available() = True`
-- GPU observed: NVIDIA GeForce RTX 5060 Ti, about 8 GB VRAM
-
-This is the existing Fairseq app venv. Do not install TensorRT-LLM into it.
-
-### Fairseq GPU Throughput
-
-Greedy-like decode:
-
-- `beam=1 topk=1`
-- large batches plateaued around 400-440 items/s in the benchmark script
-
-Default-ish beam decode:
-
-- `beam=8 topk=5`
-- large batches plateaued around 270 items/s in earlier tests
-- artifacts in `artifacts/fairseq_baseline/` contain the current locked
-  baseline rows
-
-Important caveat: one-shot `nvidia-smi` row-boundary samples underreport
-utilization. Trust throughput more than the sampled utilization number.
-
-### Multiple Model Instances
-
-The benchmark was modified with `--model-instances N` to load independent model
-replicas and run one Python thread per instance.
-
-Observed behavior:
-
-- 2 replicas improved aggregate throughput by roughly 25-30%.
-- 4 replicas regressed.
-- Per-instance throughput dropped as instances increased.
-
-Interpretation: multiple replicas add some concurrency, but contention appears
-quickly. This does not solve the decode-loop problem.
-
-### Custom Greedy Decoder Experiment
-
-`../greedy_decode_experiment.py` implements a specialized Fairseq greedy decoder
-outside app/site-packages. It bypasses generic `SequenceGenerator` beam logic for
-`beam=1`.
-
-Observed earlier:
-
-- Fairseq batch 512: around 420 items/s
-- custom greedy batch 512: around 490-507 items/s
-
-This supported the theory that Fairseq generation overhead is meaningful.
-
-## TensorRT-LLM Workspace Artifacts
-
-Current workspace:
+Main status files:
 
 ```text
-inference experiment/trtllm_port/
+PHASE_STATUS.md
+CHAT_HANDOFF.md
+README.md
 ```
 
-Important files:
+Core TensorRT-LLM scripts:
 
-- `README.md`: workspace overview
-- `PHASE_STATUS.md`: current phase status and blocker
-- `capture_fairseq_baseline.py`: captures Fairseq output/benchmark artifacts
-- `inspect_indicxlit_checkpoint.py`: inspects checkpoint and emits mapping
-  report
-- `probe_trtllm_env.py`: checks TensorRT-LLM environment availability
-- `words_en_hi.txt`: fixed baseline word list
+```text
+convert_indicxlit_to_trtllm.py
+run_trtllm_greedy.py
+compare_trtllm_parity.py
+evaluate_dakshina_trtllm.py
+evaluate_dakshina_fairseq.py
+verify_trtllm_weight_port.py
+probe_trtllm_env.py
+```
 
-Important artifacts:
+Triton prototype:
 
-- `artifacts/fairseq_baseline/manifest.json`
-- `artifacts/fairseq_baseline/*.json`
-- `artifacts/fairseq_baseline/*_benchmark.csv`
-- `artifacts/indicxlit_checkpoint_mapping.json`
-- `artifacts/trtllm_env_probe.json`
+```text
+triton_indicxlit/
+triton_indicxlit/README.md
+triton_indicxlit/scripts/run_triton.sh
+triton_indicxlit/scripts/dry_run_pipeline.py
+triton_indicxlit/model_repository/
+```
 
-## Phase Status
+TensorRT-LLM environment:
 
-### Phase 0: Baseline Lock
+```text
+/IndicXlit/.venv-trtllm
+/IndicXlit/inference experiment/trtllm_port/env_trtllm.sh
+```
 
-Complete.
+Fairseq verification environment:
 
-The baseline capture tool created four cases:
+```text
+/IndicXlit/.venv-fairseq
+```
 
-- `greedy_no_postprocess`
-- `beam8_top5_no_postprocess`
-- `greedy_postprocess`
-- `beam8_top5_postprocess`
+## Git State to Expect
 
-Each case has JSON output artifacts and benchmark CSV rows.
+The Triton work is currently uncommitted in this workspace.
 
-### Phase 1: TensorRT-LLM Environment
+Expected changed/untracked files include:
 
-Blocked locally by disk capacity.
+```text
+.gitignore
+inference experiment/trtllm_port/PHASE_STATUS.md
+inference experiment/trtllm_port/CHAT_HANDOFF.md
+inference experiment/trtllm_port/triton_indicxlit/**
+```
 
-Findings:
+Generated engine artifacts are intentionally ignored and should not be committed:
 
-- Current app `.venv` should not receive TensorRT-LLM.
-- A separate `.venv-trtllm` was created.
-- `tensorrt~=10.14.1` installed successfully there.
-- `tensorrt-llm==1.2.1` failed due `OSError: [Errno 28] No space left on
-  device`.
-- The failing install built a `tensorrt_llm-1.2.1` wheel around 2.5 GB and
-  pulled a large Torch/CUDA dependency stack.
-- The local 32 GB filesystem is not enough.
+```text
+inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/
+```
 
-Cloud recommendation:
+## Environment That Worked
 
-- GPU: L4/A10/A10G/A100/RTX 4090 class
-- VRAM: 16 GB minimum, 24 GB comfortable
-- CPU: 8 vCPU minimum
-- RAM: 32 GB minimum, 64 GB comfortable
-- Disk: 150 GB minimum, 250 GB comfortable
-- Prefer NVIDIA's prebuilt TensorRT-LLM container over pip in the app venv.
+Current cloud machine used for successful TRT/Triton work:
 
-### Phase 2: Checkpoint Mapping
+- GPU: NVIDIA GeForce RTX 4090, 24 GB VRAM
+- Driver: 580.159.04
+- CUDA runtime capability reported around CUDA 13
+- RAM: about 503 GiB
+- OS: Ubuntu 22.04 style package environment
 
-Complete for dry-run mapping.
+Isolated TensorRT-LLM Python environment:
 
-Result from `inspect_indicxlit_checkpoint.py`:
+- Python: 3.10.12
+- `tensorrt-llm==1.2.1`
+- `tensorrt==10.14.1.48.post1`
+- `torch==2.9.1+cu128`
+- `nvidia-cublas==13.6.0.2`
 
-- 267 tensors found
-- 261 required inference tensors mapped
-- 0 missing required tensors
-- 6 metadata/sentinel tensors intentionally ignored
+Activate it with:
 
-The mapping report uses descriptive target names. Final converter names must be
-matched against the TensorRT-LLM version installed on the cloud machine.
+```bash
+source "inference experiment/trtllm_port/env_trtllm.sh"
+```
 
-## Full Phase Plan
+Do not install TensorRT-LLM into the production/app `.venv`.
 
-### Phase 3: Greedy TensorRT-LLM Export
+## Reinstall Notes for a Fresh Instance
 
-Implement only after TensorRT-LLM is available in a suitable environment.
+Prefer recreating the isolated `.venv-trtllm` rather than modifying the app
+environment.
 
-Tasks:
+High-level requirements:
 
-- Create an IndicXlit-specific converter or adapt TensorRT-LLM's encoder-decoder
-  NMT converter.
-- Convert only `en2indic` first.
-- Build encoder and decoder engines with:
-  - `tp_size=1`
-  - `pp_size=1`
-  - `max_beam_width=1`
-  - `max_batch_size=512`
-  - `max_input_len=128`
-  - `max_seq_len=64`
-  - fp32 precision first
-- Write a runner accepting already-preprocessed char-token strings.
+- Python 3.10 with venv/dev headers
+- large disk, at least 150 GB practical
+- `tensorrt-llm==1.2.1`
+- matching TensorRT Python and C++ libraries
+- local Triton Server
+- TensorRT-LLM Triton backend built from source or provided by a matching
+  NVIDIA container/image
 
-Success gate:
+The previous successful TensorRT C++ package versions were pinned to match the
+Python TensorRT wheel:
 
-- Converter completes with no missing weights.
-- Engine build succeeds.
-- Runner returns non-empty output for one Hindi transliteration input.
-- Batch sizes 1, 32, and 128 run without crashing.
+```text
+libnvinfer10=10.14.1.48-1+cuda13.0
+libnvinfer-plugin10=10.14.1.48-1+cuda13.0
+libnvinfer-dev=10.14.1.48-1+cuda13.0
+libnvinfer-plugin-dev=10.14.1.48-1+cuda13.0
+libnvinfer-headers-dev=10.14.1.48-1+cuda13.0
+libnvinfer-headers-plugin-dev=10.14.1.48-1+cuda13.0
+```
 
-### Phase 4: Greedy Parity
+Other build/runtime packages installed during the working session:
 
-Compare against Phase 0 fixed baseline.
+```text
+cmake
+rapidjson-dev
+nlohmann-json3-dev
+```
 
-Compare:
+The venv also needed CMake:
 
-- preprocessed source string
-- source token ids
-- generated token ids
-- raw decoded char string
-- final postprocessed output
+```bash
+python -m pip install "cmake==3.31.10"
+```
 
-Success gate:
+Triton standalone used in the successful run:
 
-- At least 95% exact final output match against Fairseq greedy.
-- Any mismatch has a token-id diff artifact.
-- Batch output order matches input order.
+```text
+/tmp/tritonserver-2.70.0/tritonserver
+server_version: 2.70.0
+```
 
-### Phase 5: Beam Search
+Extra runtime compatibility libraries were placed under:
 
-Only after greedy parity is stable.
+```text
+/tmp/tritonserver-2.70.0/cuda13
+/tmp/tritonserver-2.70.0/compat
+/tmp/tritonserver-2.70.0/dcgm
+/tmp/tritonserver-2.70.0/libarchive
+```
 
-Tasks:
+The launch script already wires these into `LD_LIBRARY_PATH`.
 
-- Rebuild decoder engine with `max_beam_width=8`.
-- Run with `num_beams=8`.
-- Match Fairseq best output first.
-- Treat full `topk=5` candidate parity as optional v2 if TRT-LLM runner does not
-  expose the same candidate shape naturally.
+## TensorRT-LLM Checkpoints and Engines
 
-Success gate:
+Converted TensorRT-LLM checkpoint:
 
-- Beam run completes for batch sizes 1, 32, and 128.
-- Best output matches Fairseq beam best output for at least 95% of fixed words.
-- Throughput is recorded against Fairseq `beam=8 topk=5`.
+```text
+artifacts/trtllm_checkpoint_en_hi/encoder/config.json
+artifacts/trtllm_checkpoint_en_hi/encoder/rank0.safetensors
+artifacts/trtllm_checkpoint_en_hi/decoder/config.json
+artifacts/trtllm_checkpoint_en_hi/decoder/rank0.safetensors
+```
 
-### Phase 6: Performance Benchmark
+Correctness/parity engine:
 
-Benchmark TensorRT-LLM against the locked Fairseq baseline.
+```text
+artifacts/trtllm_engines_en_hi_beam5/
+```
 
-Use:
+This engine has `remove_input_padding=disable` and is the one used for the
+attention-mask-fixed Dakshina parity result.
 
-- batch sizes 1, 32, 128, 512
-- greedy and beam
-- postprocess off and on
-- fixed target item count
+Triton serving engine:
 
-Record:
+```text
+artifacts/trtllm_engines_en_hi_beam5_triton/
+```
 
-- items/s
-- wall ms/item
-- CPU cores
-- RSS
-- GPU memory
-- continuous GPU utilization if practical
+This engine is separate because Triton `inflight_fused_batching` requires:
 
-Success gate:
+- `remove_input_padding=enable`
+- `kv_cache_type=paged`
 
-- Greedy TRT-LLM beats Fairseq greedy by at least 25%, or explain why not.
-- Beam TRT-LLM beats Fairseq beam by at least 50%, or explain why not.
-- CPU usage drops for beam decode.
-- No correctness regression versus parity gates.
+Rebuild Triton-compatible engines:
 
-### Phase 7: App Integration Decision
+```bash
+source "inference experiment/trtllm_port/env_trtllm.sh"
+OUT="inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton"
 
-Only integrate if correctness and performance justify it.
+trtllm-build \
+  --checkpoint_dir "inference experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/encoder" \
+  --output_dir "$OUT/encoder" \
+  --max_batch_size 128 \
+  --max_input_len 128 \
+  --max_seq_len 128 \
+  --max_beam_width 5 \
+  --max_num_tokens 16384 \
+  --kv_cache_type paged \
+  --remove_input_padding enable \
+  --bert_attention_plugin auto
 
-Tasks:
+trtllm-build \
+  --checkpoint_dir "inference experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/decoder" \
+  --output_dir "$OUT/decoder" \
+  --max_batch_size 128 \
+  --max_input_len 1 \
+  --max_seq_len 64 \
+  --max_encoder_input_len 4096 \
+  --max_beam_width 5 \
+  --max_num_tokens 8192 \
+  --kv_cache_type paged \
+  --remove_input_padding enable \
+  --gpt_attention_plugin auto
+```
 
-- Add runtime-selectable backend:
-  - `fairseq` default
-  - `trtllm` opt-in
-- Share existing preprocessing/postprocessing.
-- Validate engine files at startup.
-- Fail fast if selected backend assets are missing.
+## Weight Port Verification
 
-Success gate:
+`verify_trtllm_weight_port.py` confirmed the converted tensors exactly match the
+mapped Fairseq tensors:
 
-- Existing Fairseq app behavior unchanged by default.
-- TRT-LLM backend serves the same API shape.
-- HTTP smoke test passes.
-- End-to-end API benchmark shows a real gain.
-- Rollback is one config change.
+- encoder max absolute diff: `0.0`
+- decoder max absolute diff: `0.0`
+- exact tensor port: `true`
+- Fairseq embedding scale: `16.0`
+- TensorRT-LLM encoder `has_embedding_scale`: `true`
+- TensorRT-LLM encoder `has_position_embedding`: `true`
 
-## Important Warnings for the Next Agent
+Important model details:
 
-- Do not edit `.venv` or install TensorRT-LLM into it.
-- Do not modify production app serving code until Phase 7.
-- Do not commit `.venv-trtllm`; it is ignored.
-- The Fairseq checkpoint stores `args=None`; config lives under `ckpt["cfg"]`.
-- IndicXlit preprocessing prefixes inputs with the target language token, e.g.
-  `__hi__ b h a r a t`.
-- Fairseq special ids are expected to be `<s>=0`, `<pad>=1`, `</s>=2`,
-  `<unk>=3`; verify against dictionaries/runtime before final converter work.
+- Fairseq special ids: `<s>=0`, `<pad>=1`, `</s>=2`, `<unk>=3`
+- Target language token is prepended to source input, e.g.
+  `__hi__ b h a r a t`
+- Decoder prompt is `</s>` and is stripped from final output.
+- Fairseq uses sinusoidal positional embeddings, generated in the converter.
+- Q/K/V projection weights are concatenated into TensorRT-LLM fused `qkv`
+  tensors.
 
+## Dakshina / README Evaluation
+
+Dakshina dataset source:
+
+```text
+https://github.com/google-research-datasets/dakshina
+```
+
+Local extracted file:
+
+```text
+artifacts/dakshina_data/dakshina_dataset_v1.0/hi/lexicons/hi.translit.sampled.test.tsv
+```
+
+Evaluation filtering:
+
+- first two TSV columns
+- ASCII-only roman side
+- Devanagari-only native side
+- lowercased roman side
+- deduped pairs
+
+Rows evaluated: `4502`
+
+Fairseq beam-5 README-equivalent result:
+
+- raw Top-1: `2725/4502 = 60.53%`
+- raw Top-5: `3921/4502 = 87.09%`
+- README Hindi target: `60.56%`
+- gap: `-0.03` percentage points, effectively rounding/script noise
+
+TensorRT-LLM beam-5 corrected result:
+
+- raw Top-1: `2725/4502 = 60.53%`
+- raw Top-5: `3920/4502 = 87.07%`
+- throughput: about `799` items/s in the recorded run
+
+Critical fix:
+
+- TRT runner/evaluator must pass encoder attention masks.
+- Without this, mixed-length batches let decoder cross-attention attend to
+  padded encoder positions and the score dropped significantly.
+
+The relevant code path creates:
+
+```python
+attention_mask = encoder_input_ids != PAD_ID
+```
+
+and passes it to `EncDecModelRunner.generate`.
+
+## Benchmark State
+
+`benchmark_batch_decode.py` supports:
+
+```bash
+--backend trtllm
+```
+
+Correctness-valid masked results on RTX 4090 fp32 correctness-first engine:
+
+- batch 1: `81.10` items/s, `12.33` ms/item
+- batch 32: `884.10` items/s, `1.13` ms/item
+- batch 128: `2204.87` items/s, `0.45` ms/item
+
+Command shape:
+
+```bash
+source "inference experiment/trtllm_port/env_trtllm.sh"
+python "inference experiment/benchmark_batch_decode.py" \
+  --backend trtllm \
+  --direction en2indic \
+  --lang hi \
+  --beam-width 1 \
+  --topk 1 \
+  --model-instances 1 \
+  --batch-sizes 1,32,128 \
+  --target-items 512 \
+  --min-repeats 4 \
+  --warmup 3 \
+  --words-file "inference experiment/trtllm_port/words_en_hi.txt" \
+  --csv "inference experiment/trtllm_port/artifacts/trtllm_benchmark_batch_decode.csv"
+```
+
+Batch 1000 does not fit the current setup:
+
+- stable engine rejects it because `max_batch_size=512`
+- experimental `max_batch_size=1000` decoder build failed trying to allocate
+  about `25.17` GB during TensorRT tactic selection on a 24 GB RTX 4090
+
+## Triton Backend Build State
+
+The old `triton-inference-server/tensorrtllm_backend` repo is documentation and
+redirect-style context. The actual source used was TensorRT-LLM v1.2.1:
+
+```text
+/tmp/TensorRT-LLM-triton-v1.2.1/triton_backend/inflight_batcher_llm
+```
+
+The backend build output was:
+
+```text
+/tmp/TensorRT-LLM-triton-v1.2.1/triton_backend/inflight_batcher_llm/build/libtriton_tensorrtllm.so
+/tmp/TensorRT-LLM-triton-v1.2.1/triton_backend/inflight_batcher_llm/build/trtllmExecutorWorker
+```
+
+Copied to Triton:
+
+```text
+/tmp/tritonserver-2.70.0/tritonserver/backends/tensorrtllm/libtriton_tensorrtllm.so
+/tmp/tritonserver-2.70.0/tritonserver/backends/tensorrtllm/trtllmExecutorWorker
+```
+
+If rebuilding, ensure `ldd` on `libtriton_tensorrtllm.so` resolves libraries
+from:
+
+```text
+.venv-trtllm/lib/python3.10/site-packages/tensorrt_llm/libs
+.venv-trtllm/lib/python3.10/site-packages/torch/lib
+.venv-trtllm/lib/python3.10/site-packages/nvidia/cuda_runtime/lib
+.venv-trtllm/lib/python3.10/site-packages/nvidia/cu13/lib
+.venv-trtllm/lib/python3.10/site-packages/nvidia/cudnn/lib
+.venv-trtllm/lib/python3.10/site-packages/nvidia/cublas/lib
+.venv-trtllm/lib/python3.10/site-packages/nvidia/nccl/lib
+```
+
+The working `run_triton.sh` sets these paths.
+
+## Triton Serving
+
+Launch:
+
+```bash
+"inference experiment/trtllm_port/triton_indicxlit/scripts/run_triton.sh"
+```
+
+Default ports:
+
+- HTTP: `8010`
+- metrics: `8012`
+- gRPC disabled by default in this script
+
+Expected READY models:
+
+```text
+indicxlit_preprocess
+indicxlit_tensorrt_llm
+indicxlit_postprocess
+indicxlit_ensemble
+```
+
+Single smoke request:
+
+```bash
+curl -X POST localhost:8010/v2/models/indicxlit_ensemble/infer \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "inputs": [
+      {"name": "text_input", "shape": [1, 1], "datatype": "BYTES", "data": ["bharat"]},
+      {"name": "target_lang", "shape": [1, 1], "datatype": "BYTES", "data": ["hi"]},
+      {"name": "max_tokens", "shape": [1, 1], "datatype": "INT32", "data": [32]},
+      {"name": "beam_width", "shape": [1, 1], "datatype": "INT32", "data": [5]},
+      {"name": "topk", "shape": [1, 1], "datatype": "INT32", "data": [5]},
+      {"name": "rescore", "shape": [1, 1], "datatype": "BOOL", "data": [false]}
+    ],
+    "outputs": [
+      {"name": "text_output"},
+      {"name": "candidates_json"}
+    ]
+  }'
+```
+
+Verified output:
+
+```json
+{
+  "text_output": "भारत",
+  "candidates_json": ["भारत", "भरत", "अभारत", "बारत", "बहरत"]
+}
+```
+
+Concurrent probe result:
+
+- `16` single-item HTTP requests
+- concurrency `8`
+- all successful
+- measured local HTTP+Python pre/postprocess rate: `38.07` items/s
+- Triton metrics showed:
+  - `17` successful `indicxlit_ensemble` requests
+  - `17` successful `indicxlit_tensorrt_llm` requests
+  - zero failures
+
+Metrics command:
+
+```bash
+curl -sS localhost:8012/metrics | rg 'nv_trt_llm|indicxlit_ensemble|indicxlit_tensorrt_llm'
+```
+
+## Triton Serving Caveat
+
+The current static ensemble is non-decoupled:
+
+```text
+model_transaction_policy {
+  decoupled: false
+}
+```
+
+This supports normal single-item requests through the ensemble. Send many
+normal requests concurrently and let TensorRT-LLM's inflight batcher schedule
+them internally.
+
+A single client request carrying batch tensors, for example shape `[4, 1]`, was
+rejected:
+
+```text
+Batch size > 1 requires the tensorrt_llm backend to be using decoupled transaction policy
+```
+
+Changing the core backend to `decoupled: true` allows that path in the
+TensorRT-LLM backend, but Triton rejects the current static ensemble:
+
+```text
+step of model 'indicxlit_ensemble' receives inputs originated from different
+decoupled models
+```
+
+Conclusion:
+
+- Working shape now: non-decoupled static ensemble, many single-item HTTP
+  requests.
+- To support true client-side batched tensors in one request, build a custom
+  BLS/Python wrapper or a different decoupled model layout.
+
+## Known Warnings
+
+During Triton inference the backend logs warnings like:
+
+```text
+CrossAttentionMask is not provided...
+Default padding attention mask will be used...
+```
+
+Single-item serving output is correct for the smoke tests. For larger
+correctness validation through Triton, verify whether the backend's default mask
+is sufficient for padded/mixed-length traffic. The direct TensorRT-LLM parity
+runner remains the correctness reference because it explicitly passes
+`attention_mask`.
+
+Triton backend unload can be slow or time out in some runs. Use fresh server
+processes for config changes instead of relying on live reload.
+
+## Immediate Next Steps
+
+1. Commit the Triton model repository and documentation changes if they are
+   acceptable.
+2. In a fresh instance, reinstall/rebuild TensorRT-LLM, Triton Server, and the
+   `tensorrtllm` backend as needed.
+3. Rebuild or copy `artifacts/trtllm_engines_en_hi_beam5_triton/`.
+4. Start Triton with `triton_indicxlit/scripts/run_triton.sh`.
+5. Re-run the smoke request and concurrent probe.
+6. Decide serving strategy:
+   - keep static ensemble and concurrent single-item requests, or
+   - implement BLS/Python wrapper for true batched request payloads.
+7. Only after serving shape is stable, benchmark realistic HTTP traffic.
+
+## Hard Rules
+
+- Do not install TensorRT-LLM into the app `.venv`.
+- Do not commit `.venv-trtllm`, `.venv-fairseq`, downloaded datasets, model
+  assets, or TensorRT engine binaries.
+- Do not modify production Flask/app serving code until the serving strategy is
+  decided.
+- Keep the Fairseq path as the default production behavior until final
+  integration is proven.

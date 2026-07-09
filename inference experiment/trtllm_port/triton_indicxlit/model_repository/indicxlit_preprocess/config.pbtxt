@@ -1,0 +1,40 @@
+name: "indicxlit_preprocess"
+backend: "python"
+max_batch_size: 128
+
+dynamic_batching {
+  preferred_batch_size: [ 32, 64, 128 ]
+  max_queue_delay_microseconds: 3000
+}
+
+input [
+  { name: "TEXT" data_type: TYPE_STRING dims: [ 1 ] },
+  { name: "TARGET_LANG" data_type: TYPE_STRING dims: [ 1 ] optional: true },
+  { name: "REQUEST_OUTPUT_LEN" data_type: TYPE_INT32 dims: [ 1 ] optional: true }
+]
+
+output [
+  { name: "INPUT_ID" data_type: TYPE_INT32 dims: [ -1 ] },
+  { name: "REQUEST_INPUT_LEN" data_type: TYPE_INT32 dims: [ 1 ] },
+  { name: "DECODER_INPUT_ID" data_type: TYPE_INT32 dims: [ -1 ] },
+  { name: "REQUEST_DECODER_INPUT_LEN" data_type: TYPE_INT32 dims: [ 1 ] },
+  { name: "REQUEST_OUTPUT_LEN" data_type: TYPE_INT32 dims: [ 1 ] },
+  { name: "OUT_END_ID" data_type: TYPE_INT32 dims: [ 1 ] },
+  { name: "OUT_PAD_ID" data_type: TYPE_INT32 dims: [ 1 ] },
+  { name: "SOURCE_WORD" data_type: TYPE_STRING dims: [ 1 ] },
+  { name: "TARGET_LANG" data_type: TYPE_STRING dims: [ 1 ] }
+]
+
+parameters {
+  key: "model_root"
+  value: { string_value: "/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic" }
+}
+parameters {
+  key: "default_lang"
+  value: { string_value: "hi" }
+}
+
+instance_group [
+  { count: 1 kind: KIND_CPU }
+]
+

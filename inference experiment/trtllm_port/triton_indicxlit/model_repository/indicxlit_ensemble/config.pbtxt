@@ -1,0 +1,67 @@
+name: "indicxlit_ensemble"
+platform: "ensemble"
+max_batch_size: 128
+
+input [
+  { name: "text_input" data_type: TYPE_STRING dims: [ 1 ] },
+  { name: "target_lang" data_type: TYPE_STRING dims: [ 1 ] optional: true },
+  { name: "max_tokens" data_type: TYPE_INT32 dims: [ 1 ] optional: true },
+  { name: "beam_width" data_type: TYPE_INT32 dims: [ 1 ] optional: true },
+  { name: "topk" data_type: TYPE_INT32 dims: [ 1 ] optional: true },
+  { name: "rescore" data_type: TYPE_BOOL dims: [ 1 ] optional: true }
+]
+
+output [
+  { name: "text_output" data_type: TYPE_STRING dims: [ 1 ] },
+  { name: "candidates_json" data_type: TYPE_STRING dims: [ 1 ] }
+]
+
+ensemble_scheduling {
+  step [
+    {
+      model_name: "indicxlit_preprocess"
+      model_version: -1
+      input_map { key: "TEXT" value: "text_input" }
+      input_map { key: "TARGET_LANG" value: "target_lang" }
+      input_map { key: "REQUEST_OUTPUT_LEN" value: "max_tokens" }
+      output_map { key: "INPUT_ID" value: "_INPUT_ID" }
+      output_map { key: "REQUEST_INPUT_LEN" value: "_REQUEST_INPUT_LEN" }
+      output_map { key: "DECODER_INPUT_ID" value: "_DECODER_INPUT_ID" }
+      output_map { key: "REQUEST_DECODER_INPUT_LEN" value: "_REQUEST_DECODER_INPUT_LEN" }
+      output_map { key: "REQUEST_OUTPUT_LEN" value: "_REQUEST_OUTPUT_LEN" }
+      output_map { key: "OUT_END_ID" value: "_END_ID" }
+      output_map { key: "OUT_PAD_ID" value: "_PAD_ID" }
+      output_map { key: "TARGET_LANG" value: "_TARGET_LANG" }
+    },
+    {
+      model_name: "indicxlit_tensorrt_llm"
+      model_version: -1
+      input_map { key: "input_ids" value: "_INPUT_ID" }
+      input_map { key: "decoder_input_ids" value: "_DECODER_INPUT_ID" }
+      input_map { key: "input_lengths" value: "_REQUEST_INPUT_LEN" }
+      input_map { key: "decoder_input_lengths" value: "_REQUEST_DECODER_INPUT_LEN" }
+      input_map { key: "request_output_len" value: "_REQUEST_OUTPUT_LEN" }
+      input_map { key: "end_id" value: "_END_ID" }
+      input_map { key: "pad_id" value: "_PAD_ID" }
+      input_map { key: "beam_width" value: "beam_width" }
+      input_map { key: "num_return_sequences" value: "topk" }
+      input_map { key: "return_log_probs" value: "rescore" }
+      output_map { key: "output_ids" value: "_TOKENS_BATCH" }
+      output_map { key: "sequence_length" value: "_SEQUENCE_LENGTH" }
+      output_map { key: "cum_log_probs" value: "_CUM_LOG_PROBS" }
+    },
+    {
+      model_name: "indicxlit_postprocess"
+      model_version: -1
+      input_map { key: "TOKENS_BATCH" value: "_TOKENS_BATCH" }
+      input_map { key: "SEQUENCE_LENGTH" value: "_SEQUENCE_LENGTH" }
+      input_map { key: "CUM_LOG_PROBS" value: "_CUM_LOG_PROBS" }
+      input_map { key: "TARGET_LANG" value: "_TARGET_LANG" }
+      input_map { key: "TOPK" value: "topk" }
+      input_map { key: "RESCORE" value: "rescore" }
+      output_map { key: "TEXT_OUTPUT" value: "text_output" }
+      output_map { key: "CANDIDATES_JSON" value: "candidates_json" }
+    }
+  ]
+}
+
