@@ -1,0 +1,836 @@
+{
+  "lang": "hi",
+  "beam": 1,
+  "topk": 1,
+  "postprocess": true,
+  "model": {
+    "encoder_layers": 6,
+    "decoder_layers": 6,
+    "encoder_embed_dim": 256,
+    "decoder_embed_dim": 256,
+    "src_vocab_size": 54,
+    "tgt_vocab_size": 806,
+    "pad": 1,
+    "eos": 2,
+    "unk": 3
+  },
+  "generation": {
+    "max_len_a": 0.0,
+    "max_len_b": 200,
+    "min_len": 1,
+    "lenpen": 1.0
+  },
+  "rows": [
+    {
+      "index": 0,
+      "word": "bharat",
+      "preprocessed": "__hi__ b h a r a t",
+      "source_token_ids": [
+        38,
+        22,
+        7,
+        4,
+        9,
+        4,
+        8,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ b h a r a t",
+      "hypotheses": [
+        {
+          "score": -0.1252470314502716,
+          "text": "भ ा र त"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.1252470314502716,
+          "text": "भ ा र त"
+        }
+      ],
+      "positional_scores": [
+        "-0.0119 -0.5925 -0.0072 -0.0115 -0.0031"
+      ],
+      "final_postprocessed_best": "भारत",
+      "final_postprocessed_all": [
+        "भारत"
+      ]
+    },
+    {
+      "index": 1,
+      "word": "namaste",
+      "preprocessed": "__hi__ n a m a s t e",
+      "source_token_ids": [
+        38,
+        6,
+        4,
+        16,
+        4,
+        15,
+        8,
+        11,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ n a m a s t e",
+      "hypotheses": [
+        {
+          "score": -0.042168159037828445,
+          "text": "न म स ् त े"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.042168159037828445,
+          "text": "न म स ् त े"
+        }
+      ],
+      "positional_scores": [
+        "-0.0003 -0.0822 -0.0193 -0.1836 -0.0050 -0.0015 -0.0033"
+      ],
+      "final_postprocessed_best": "नमस्ते",
+      "final_postprocessed_all": [
+        "नमस्ते"
+      ]
+    },
+    {
+      "index": 2,
+      "word": "amma",
+      "preprocessed": "__hi__ a m m a",
+      "source_token_ids": [
+        38,
+        4,
+        16,
+        16,
+        4,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ a m m a",
+      "hypotheses": [
+        {
+          "score": -0.06648717820644379,
+          "text": "अ म ् म ा"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.06648717820644379,
+          "text": "अ म ् म ा"
+        }
+      ],
+      "positional_scores": [
+        "-0.2055 -0.0556 -0.0544 -0.0044 -0.0751 -0.0039"
+      ],
+      "final_postprocessed_best": "अम्मा",
+      "final_postprocessed_all": [
+        "अम्मा"
+      ]
+    },
+    {
+      "index": 3,
+      "word": "delhi",
+      "preprocessed": "__hi__ d e l h i",
+      "source_token_ids": [
+        38,
+        14,
+        11,
+        13,
+        7,
+        5,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ d e l h i",
+      "hypotheses": [
+        {
+          "score": -0.2693599760532379,
+          "text": "द े ल ् ह ी"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.2693599760532379,
+          "text": "द े ल ् ह ी"
+        }
+      ],
+      "positional_scores": [
+        "-0.2291 -0.2243 -0.0014 -0.8331 -0.5645 -0.0257 -0.0074"
+      ],
+      "final_postprocessed_best": "देल्ही",
+      "final_postprocessed_all": [
+        "देल्ही"
+      ]
+    },
+    {
+      "index": 4,
+      "word": "karnataka",
+      "preprocessed": "__hi__ k a r n a t a k a",
+      "source_token_ids": [
+        38,
+        12,
+        4,
+        9,
+        6,
+        4,
+        8,
+        4,
+        12,
+        4,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ k a r n a t a k a",
+      "hypotheses": [
+        {
+          "score": -0.06663617491722107,
+          "text": "क र ् न ा ट क"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.06663617491722107,
+          "text": "क र ् न ा ट क"
+        }
+      ],
+      "positional_scores": [
+        "-0.0007 -0.0072 -0.0181 -0.3517 -0.0082 -0.0009 -0.0025 -0.1438"
+      ],
+      "final_postprocessed_best": "कर्नाटक",
+      "final_postprocessed_all": [
+        "कर्नाटक"
+      ]
+    },
+    {
+      "index": 5,
+      "word": "transliteration",
+      "preprocessed": "__hi__ t r a n s l i t e r a t i o n",
+      "source_token_ids": [
+        38,
+        8,
+        9,
+        4,
+        6,
+        15,
+        13,
+        5,
+        8,
+        11,
+        9,
+        4,
+        8,
+        5,
+        17,
+        6,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ t r a n s l i t e r a t i o n",
+      "hypotheses": [
+        {
+          "score": -0.09714936465024948,
+          "text": "ट ् र ा ं स ल ि ट र े श न"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.09714936465024948,
+          "text": "ट ् र ा ं स ल ि ट र े श न"
+        }
+      ],
+      "positional_scores": [
+        "-0.0026 -0.0007 -0.0000 -0.0180 -0.1730 -0.0023 -0.1917 -0.4774 -0.0054 -0.4801 -0.0022 -0.0027 -0.0028 -0.0012"
+      ],
+      "final_postprocessed_best": "ट्रांसलिटरेशन",
+      "final_postprocessed_all": [
+        "ट्रांसलिटरेशन"
+      ]
+    },
+    {
+      "index": 6,
+      "word": "computer",
+      "preprocessed": "__hi__ c o m p u t e r",
+      "source_token_ids": [
+        38,
+        23,
+        17,
+        16,
+        19,
+        10,
+        8,
+        11,
+        9,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ c o m p u t e r",
+      "hypotheses": [
+        {
+          "score": -0.13638707995414734,
+          "text": "क म ् प ् य ू ट र"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.13638707995414734,
+          "text": "क म ् प ् य ू ट र"
+        }
+      ],
+      "positional_scores": [
+        "-0.0012 -1.1516 -0.0050 -0.0019 -0.0237 -0.0003 -0.1743 -0.0016 -0.0019 -0.0025"
+      ],
+      "final_postprocessed_best": "कम्प्यूटर",
+      "final_postprocessed_all": [
+        "कम्प्यूटर"
+      ]
+    },
+    {
+      "index": 7,
+      "word": "school",
+      "preprocessed": "__hi__ s c h o o l",
+      "source_token_ids": [
+        38,
+        15,
+        23,
+        7,
+        17,
+        17,
+        13,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ s c h o o l",
+      "hypotheses": [
+        {
+          "score": -0.025223324075341225,
+          "text": "स ् क ू ल"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.025223324075341225,
+          "text": "स ् क ू ल"
+        }
+      ],
+      "positional_scores": [
+        "-0.0306 -0.0108 -0.0031 -0.0999 -0.0023 -0.0045"
+      ],
+      "final_postprocessed_best": "स्कूल",
+      "final_postprocessed_all": [
+        "स्कूल"
+      ]
+    },
+    {
+      "index": 8,
+      "word": "mobile",
+      "preprocessed": "__hi__ m o b i l e",
+      "source_token_ids": [
+        38,
+        16,
+        17,
+        22,
+        5,
+        13,
+        11,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ m o b i l e",
+      "hypotheses": [
+        {
+          "score": -0.026425499469041824,
+          "text": "म ो ब ा इ ल"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.026425499469041824,
+          "text": "म ो ब ा इ ल"
+        }
+      ],
+      "positional_scores": [
+        "-0.0007 -0.0223 -0.0012 -0.0120 -0.1402 -0.0005 -0.0081"
+      ],
+      "final_postprocessed_best": "मोबाइल",
+      "final_postprocessed_all": [
+        "मोबाइल"
+      ]
+    },
+    {
+      "index": 9,
+      "word": "india",
+      "preprocessed": "__hi__ i n d i a",
+      "source_token_ids": [
+        38,
+        5,
+        6,
+        14,
+        5,
+        4,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ i n d i a",
+      "hypotheses": [
+        {
+          "score": -0.08902665227651596,
+          "text": "इ ं ड ि य ा"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.08902665227651596,
+          "text": "इ ं ड ि य ा"
+        }
+      ],
+      "positional_scores": [
+        "-0.0282 -0.2653 -0.2865 -0.0235 -0.0157 -0.0012 -0.0028"
+      ],
+      "final_postprocessed_best": "इंडिया",
+      "final_postprocessed_all": [
+        "इंडिया"
+      ]
+    },
+    {
+      "index": 10,
+      "word": "ramayan",
+      "preprocessed": "__hi__ r a m a y a n",
+      "source_token_ids": [
+        38,
+        9,
+        4,
+        16,
+        4,
+        18,
+        4,
+        6,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ r a m a y a n",
+      "hypotheses": [
+        {
+          "score": -0.0534542016685009,
+          "text": "र ा म ा य ण"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.0534542016685009,
+          "text": "र ा म ा य ण"
+        }
+      ],
+      "positional_scores": [
+        "-0.0006 -0.1552 -0.0004 -0.1084 -0.0035 -0.1031 -0.0030"
+      ],
+      "final_postprocessed_best": "रामायण",
+      "final_postprocessed_all": [
+        "रामायण"
+      ]
+    },
+    {
+      "index": 11,
+      "word": "pradesh",
+      "preprocessed": "__hi__ p r a d e s h",
+      "source_token_ids": [
+        38,
+        19,
+        9,
+        4,
+        14,
+        11,
+        15,
+        7,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ p r a d e s h",
+      "hypotheses": [
+        {
+          "score": -0.003248821711167693,
+          "text": "प ् र द े श"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.003248821711167693,
+          "text": "प ् र द े श"
+        }
+      ],
+      "positional_scores": [
+        "-0.0002 -0.0030 -0.0001 -0.0150 -0.0014 -0.0015 -0.0016"
+      ],
+      "final_postprocessed_best": "प्रदेश",
+      "final_postprocessed_all": [
+        "प्रदेश"
+      ]
+    },
+    {
+      "index": 12,
+      "word": "language",
+      "preprocessed": "__hi__ l a n g u a g e",
+      "source_token_ids": [
+        38,
+        13,
+        4,
+        6,
+        21,
+        10,
+        4,
+        21,
+        11,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ l a n g u a g e",
+      "hypotheses": [
+        {
+          "score": -0.12726753950119019,
+          "text": "ल ै ं ग ् व े ज"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.12726753950119019,
+          "text": "ल ै ं ग ् व े ज"
+        }
+      ],
+      "positional_scores": [
+        "-0.0014 -0.3418 -0.0594 -0.0021 -0.6956 -0.0145 -0.0112 -0.0007 -0.0187"
+      ],
+      "final_postprocessed_best": "लैंग्वेज",
+      "final_postprocessed_all": [
+        "लैंग्वेज"
+      ]
+    },
+    {
+      "index": 13,
+      "word": "server",
+      "preprocessed": "__hi__ s e r v e r",
+      "source_token_ids": [
+        38,
+        15,
+        11,
+        9,
+        20,
+        11,
+        9,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ s e r v e r",
+      "hypotheses": [
+        {
+          "score": -0.02721991203725338,
+          "text": "स र ् व र"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.02721991203725338,
+          "text": "स र ् व र"
+        }
+      ],
+      "positional_scores": [
+        "-0.0102 -0.0676 -0.0563 -0.0011 -0.0259 -0.0022"
+      ],
+      "final_postprocessed_best": "सर्वर",
+      "final_postprocessed_all": [
+        "सर्वर"
+      ]
+    },
+    {
+      "index": 14,
+      "word": "request",
+      "preprocessed": "__hi__ r e q u e s t",
+      "source_token_ids": [
+        38,
+        9,
+        11,
+        29,
+        10,
+        11,
+        15,
+        8,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ r e q u e s t",
+      "hypotheses": [
+        {
+          "score": -0.04601702466607094,
+          "text": "र ि क ् व े स ् ट"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.04601702466607094,
+          "text": "र ि क ् व े स ् ट"
+        }
+      ],
+      "positional_scores": [
+        "-0.0014 -0.3647 -0.0016 -0.0081 -0.0018 -0.0716 -0.0046 -0.0008 -0.0012 -0.0044"
+      ],
+      "final_postprocessed_best": "रिक्वेस्ट",
+      "final_postprocessed_all": [
+        "रिक्वेस्ट"
+      ]
+    },
+    {
+      "index": 15,
+      "word": "throughput",
+      "preprocessed": "__hi__ t h r o u g h p u t",
+      "source_token_ids": [
+        38,
+        8,
+        7,
+        9,
+        17,
+        10,
+        21,
+        7,
+        19,
+        10,
+        8,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ t h r o u g h p u t",
+      "hypotheses": [
+        {
+          "score": -0.2666850984096527,
+          "text": "थ ् र ॉ ग प ु ट"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.2666850984096527,
+          "text": "थ ् र ॉ ग प ु ट"
+        }
+      ],
+      "positional_scores": [
+        "-0.0297 -0.0072 -0.0001 -1.8204 -0.3792 -0.0353 -0.1204 -0.0069 -0.0008"
+      ],
+      "final_postprocessed_best": "थ्रॉगपुट",
+      "final_postprocessed_all": [
+        "थ्रॉगपुट"
+      ]
+    },
+    {
+      "index": 16,
+      "word": "Ganga",
+      "preprocessed": "__hi__ g a n g a",
+      "source_token_ids": [
+        38,
+        21,
+        4,
+        6,
+        21,
+        4,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ g a n g a",
+      "hypotheses": [
+        {
+          "score": -0.07276197522878647,
+          "text": "ग ं ग ा"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.07276197522878647,
+          "text": "ग ं ग ा"
+        }
+      ],
+      "positional_scores": [
+        "-0.0145 -0.2857 -0.0038 -0.0575 -0.0023"
+      ],
+      "final_postprocessed_best": "गंगा",
+      "final_postprocessed_all": [
+        "गंगा"
+      ]
+    },
+    {
+      "index": 17,
+      "word": "Shivaji",
+      "preprocessed": "__hi__ s h i v a j i",
+      "source_token_ids": [
+        38,
+        15,
+        7,
+        5,
+        20,
+        4,
+        24,
+        5,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ s h i v a j i",
+      "hypotheses": [
+        {
+          "score": -0.003123311325907707,
+          "text": "श ि व ा ज ी"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.003123311325907707,
+          "text": "श ि व ा ज ी"
+        }
+      ],
+      "positional_scores": [
+        "-0.0005 -0.0012 -0.0007 -0.0133 -0.0017 -0.0040 -0.0004"
+      ],
+      "final_postprocessed_best": "शिवाजी",
+      "final_postprocessed_all": [
+        "शिवाजी"
+      ]
+    },
+    {
+      "index": 18,
+      "word": "mahabharat",
+      "preprocessed": "__hi__ m a h a b h a r a t",
+      "source_token_ids": [
+        38,
+        16,
+        4,
+        7,
+        4,
+        22,
+        7,
+        4,
+        9,
+        4,
+        8,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ m a h a b h a r a t",
+      "hypotheses": [
+        {
+          "score": -0.0011996818939223886,
+          "text": "म ह ा भ ा र त"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.0011996818939223886,
+          "text": "म ह ा भ ा र त"
+        }
+      ],
+      "positional_scores": [
+        "-0.0000 -0.0004 -0.0002 -0.0012 -0.0072 -0.0001 -0.0002 -0.0004"
+      ],
+      "final_postprocessed_best": "महाभारत",
+      "final_postprocessed_all": [
+        "महाभारत"
+      ]
+    },
+    {
+      "index": 19,
+      "word": "internationalization",
+      "preprocessed": "__hi__ i n t e r n a t i o n a l i z a t i o n",
+      "source_token_ids": [
+        38,
+        5,
+        6,
+        8,
+        11,
+        9,
+        6,
+        4,
+        8,
+        5,
+        17,
+        6,
+        4,
+        13,
+        5,
+        26,
+        4,
+        8,
+        5,
+        17,
+        6,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ i n t e r n a t i o n a l i z a t i o n",
+      "hypotheses": [
+        {
+          "score": -0.1064479649066925,
+          "text": "इ ं ट र न ै श न ल ा इ ज े श न"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.1064479649066925,
+          "text": "इ ं ट र न ै श न ल ा इ ज े श न"
+        }
+      ],
+      "positional_scores": [
+        "-0.0027 -0.1645 -0.0003 -0.0039 -0.0133 -0.9648 -0.0040 -0.0108 -0.0365 -0.0001 -0.2167 -0.0004 -0.2810 -0.0023 -0.0008 -0.0011"
+      ],
+      "final_postprocessed_best": "इंटरनैशनलाइजेशन",
+      "final_postprocessed_all": [
+        "इंटरनैशनलाइजेशन"
+      ]
+    },
+    {
+      "index": 20,
+      "word": "zzzztest",
+      "preprocessed": "__hi__ z z z z t e s t",
+      "source_token_ids": [
+        38,
+        26,
+        26,
+        26,
+        26,
+        8,
+        11,
+        15,
+        8,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ z z z z t e s t",
+      "hypotheses": [
+        {
+          "score": -0.2927159070968628,
+          "text": "ज ़ ज ़ ट े स ् ट"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.2927159070968628,
+          "text": "ज ़ ज ़ ट े स ् ट"
+        }
+      ],
+      "positional_scores": [
+        "-0.0093 -0.8621 -0.7704 -0.4828 -0.7265 -0.0640 -0.0081 -0.0005 -0.0016 -0.0018"
+      ],
+      "final_postprocessed_best": "ज़ज़टेस्ट",
+      "final_postprocessed_all": [
+        "ज़ज़टेस्ट"
+      ]
+    },
+    {
+      "index": 21,
+      "word": "bharat",
+      "preprocessed": "__hi__ b h a r a t",
+      "source_token_ids": [
+        38,
+        22,
+        7,
+        4,
+        9,
+        4,
+        8,
+        2
+      ],
+      "raw_source_tokens_text": "__hi__ b h a r a t",
+      "hypotheses": [
+        {
+          "score": -0.1252470314502716,
+          "text": "भ ा र त"
+        }
+      ],
+      "detokenized": [
+        {
+          "score": -0.1252470314502716,
+          "text": "भ ा र त"
+        }
+      ],
+      "positional_scores": [
+        "-0.0119 -0.5925 -0.0072 -0.0115 -0.0031"
+      ],
+      "final_postprocessed_best": "भारत",
+      "final_postprocessed_all": [
+        "भारत"
+      ]
+    }
+  ],
+  "raw_translation": "S-0\t__hi__ b h a r a t\nW-0\t0.004\tseconds\nH-0\t-0.1252470314502716\tभ ा र त\nD-0\t-0.1252470314502716\tभ ा र त\nP-0\t-0.0119 -0.5925 -0.0072 -0.0115 -0.0031\nS-1\t__hi__ n a m a s t e\nW-1\t0.004\tseconds\nH-1\t-0.042168159037828445\tन म स ् त े\nD-1\t-0.042168159037828445\tन म स ् त े\nP-1\t-0.0003 -0.0822 -0.0193 -0.1836 -0.0050 -0.0015 -0.0033\nS-2\t__hi__ a m m a\nW-2\t0.004\tseconds\nH-2\t-0.06648717820644379\tअ म ् म ा\nD-2\t-0.06648717820644379\tअ म ् म ा\nP-2\t-0.2055 -0.0556 -0.0544 -0.0044 -0.0751 -0.0039\nS-3\t__hi__ d e l h i\nW-3\t0.004\tseconds\nH-3\t-0.2693599760532379\tद े ल ् ह ी\nD-3\t-0.2693599760532379\tद े ल ् ह ी\nP-3\t-0.2291 -0.2243 -0.0014 -0.8331 -0.5645 -0.0257 -0.0074\nS-4\t__hi__ k a r n a t a k a\nW-4\t0.004\tseconds\nH-4\t-0.06663617491722107\tक र ् न ा ट क\nD-4\t-0.06663617491722107\tक र ् न ा ट क\nP-4\t-0.0007 -0.0072 -0.0181 -0.3517 -0.0082 -0.0009 -0.0025 -0.1438\nS-5\t__hi__ t r a n s l i t e r a t i o n\nW-5\t0.004\tseconds\nH-5\t-0.09714936465024948\tट ् र ा ं स ल ि ट र े श न\nD-5\t-0.09714936465024948\tट ् र ा ं स ल ि ट र े श न\nP-5\t-0.0026 -0.0007 -0.0000 -0.0180 -0.1730 -0.0023 -0.1917 -0.4774 -0.0054 -0.4801 -0.0022 -0.0027 -0.0028 -0.0012\nS-6\t__hi__ c o m p u t e r\nW-6\t0.004\tseconds\nH-6\t-0.13638707995414734\tक म ् प ् य ू ट र\nD-6\t-0.13638707995414734\tक म ् प ् य ू ट र\nP-6\t-0.0012 -1.1516 -0.0050 -0.0019 -0.0237 -0.0003 -0.1743 -0.0016 -0.0019 -0.0025\nS-7\t__hi__ s c h o o l\nW-7\t0.004\tseconds\nH-7\t-0.025223324075341225\tस ् क ू ल\nD-7\t-0.025223324075341225\tस ् क ू ल\nP-7\t-0.0306 -0.0108 -0.0031 -0.0999 -0.0023 -0.0045\nS-8\t__hi__ m o b i l e\nW-8\t0.004\tseconds\nH-8\t-0.026425499469041824\tम ो ब ा इ ल\nD-8\t-0.026425499469041824\tम ो ब ा इ ल\nP-8\t-0.0007 -0.0223 -0.0012 -0.0120 -0.1402 -0.0005 -0.0081\nS-9\t__hi__ i n d i a\nW-9\t0.004\tseconds\nH-9\t-0.08902665227651596\tइ ं ड ि य ा\nD-9\t-0.08902665227651596\tइ ं ड ि य ा\nP-9\t-0.0282 -0.2653 -0.2865 -0.0235 -0.0157 -0.0012 -0.0028\nS-10\t__hi__ r a m a y a n\nW-10\t0.004\tseconds\nH-10\t-0.0534542016685009\tर ा म ा य ण\nD-10\t-0.0534542016685009\tर ा म ा य ण\nP-10\t-0.0006 -0.1552 -0.0004 -0.1084 -0.0035 -0.1031 -0.0030\nS-11\t__hi__ p r a d e s h\nW-11\t0.004\tseconds\nH-11\t-0.003248821711167693\tप ् र द े श\nD-11\t-0.003248821711167693\tप ् र द े श\nP-11\t-0.0002 -0.0030 -0.0001 -0.0150 -0.0014 -0.0015 -0.0016\nS-12\t__hi__ l a n g u a g e\nW-12\t0.004\tseconds\nH-12\t-0.12726753950119019\tल ै ं ग ् व े ज\nD-12\t-0.12726753950119019\tल ै ं ग ् व े ज\nP-12\t-0.0014 -0.3418 -0.0594 -0.0021 -0.6956 -0.0145 -0.0112 -0.0007 -0.0187\nS-13\t__hi__ s e r v e r\nW-13\t0.004\tseconds\nH-13\t-0.02721991203725338\tस र ् व र\nD-13\t-0.02721991203725338\tस र ् व र\nP-13\t-0.0102 -0.0676 -0.0563 -0.0011 -0.0259 -0.0022\nS-14\t__hi__ r e q u e s t\nW-14\t0.004\tseconds\nH-14\t-0.04601702466607094\tर ि क ् व े स ् ट\nD-14\t-0.04601702466607094\tर ि क ् व े स ् ट\nP-14\t-0.0014 -0.3647 -0.0016 -0.0081 -0.0018 -0.0716 -0.0046 -0.0008 -0.0012 -0.0044\nS-15\t__hi__ t h r o u g h p u t\nW-15\t0.004\tseconds\nH-15\t-0.2666850984096527\tथ ् र ॉ ग प ु ट\nD-15\t-0.2666850984096527\tथ ् र ॉ ग प ु ट\nP-15\t-0.0297 -0.0072 -0.0001 -1.8204 -0.3792 -0.0353 -0.1204 -0.0069 -0.0008\nS-16\t__hi__ g a n g a\nW-16\t0.004\tseconds\nH-16\t-0.07276197522878647\tग ं ग ा\nD-16\t-0.07276197522878647\tग ं ग ा\nP-16\t-0.0145 -0.2857 -0.0038 -0.0575 -0.0023\nS-17\t__hi__ s h i v a j i\nW-17\t0.004\tseconds\nH-17\t-0.003123311325907707\tश ि व ा ज ी\nD-17\t-0.003123311325907707\tश ि व ा ज ी\nP-17\t-0.0005 -0.0012 -0.0007 -0.0133 -0.0017 -0.0040 -0.0004\nS-18\t__hi__ m a h a b h a r a t\nW-18\t0.004\tseconds\nH-18\t-0.0011996818939223886\tम ह ा भ ा र त\nD-18\t-0.0011996818939223886\tम ह ा भ ा र त\nP-18\t-0.0000 -0.0004 -0.0002 -0.0012 -0.0072 -0.0001 -0.0002 -0.0004\nS-19\t__hi__ i n t e r n a t i o n a l i z a t i o n\nW-19\t0.004\tseconds\nH-19\t-0.1064479649066925\tइ ं ट र न ै श न ल ा इ ज े श न\nD-19\t-0.1064479649066925\tइ ं ट र न ै श न ल ा इ ज े श न\nP-19\t-0.0027 -0.1645 -0.0003 -0.0039 -0.0133 -0.9648 -0.0040 -0.0108 -0.0365 -0.0001 -0.2167 -0.0004 -0.2810 -0.0023 -0.0008 -0.0011\nS-20\t__hi__ z z z z t e s t\nW-20\t0.004\tseconds\nH-20\t-0.2927159070968628\tज ़ ज ़ ट े स ् ट\nD-20\t-0.2927159070968628\tज ़ ज ़ ट े स ् ट\nP-20\t-0.0093 -0.8621 -0.7704 -0.4828 -0.7265 -0.0640 -0.0081 -0.0005 -0.0016 -0.0018\nS-21\t__hi__ b h a r a t\nW-21\t0.004\tseconds\nH-21\t-0.1252470314502716\tभ ा र त\nD-21\t-0.1252470314502716\tभ ा र त\nP-21\t-0.0119 -0.5925 -0.0072 -0.0115 -0.0031\n"
+}

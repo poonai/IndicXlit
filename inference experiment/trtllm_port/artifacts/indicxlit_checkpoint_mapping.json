@@ -1,0 +1,2948 @@
+{
+  "created_at": "2026-07-09T04:17:40.175024+00:00",
+  "checkpoint": "/workspace/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic/v1.0/transformer/indicxlit.pt",
+  "status": "pass",
+  "config": {
+    "task": "translation_multi_simple_epoch",
+    "arch": "transformer",
+    "encoder_layers": 6,
+    "decoder_layers": 6,
+    "encoder_embed_dim": 256,
+    "decoder_embed_dim": 256,
+    "encoder_ffn_embed_dim": 1024,
+    "decoder_ffn_embed_dim": 1024,
+    "encoder_attention_heads": 4,
+    "decoder_attention_heads": 4,
+    "activation_fn": "gelu",
+    "encoder_normalize_before": true,
+    "decoder_normalize_before": true,
+    "layernorm_embedding": true,
+    "share_decoder_input_output_embed": false,
+    "max_source_positions": 1024,
+    "max_target_positions": 1024
+  },
+  "dictionaries": {
+    "source": {
+      "path": "/workspace/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic/v1.0/corpus-bin/dict.en.txt",
+      "size_without_specials": 28,
+      "size_with_fairseq_specials": 32,
+      "first_symbols_without_specials": [
+        "a",
+        "i",
+        "n",
+        "h",
+        "t",
+        "r",
+        "u",
+        "e",
+        "k",
+        "l",
+        "d",
+        "s",
+        "m",
+        "o",
+        "y",
+        "p",
+        "v",
+        "g",
+        "b",
+        "c",
+        "j",
+        "w",
+        "z",
+        "f",
+        "x",
+        "q",
+        "madeupword0000",
+        "madeupword0001"
+      ],
+      "special_ids": {
+        "<s>": 0,
+        "<pad>": 1,
+        "</s>": 2,
+        "<unk>": 3
+      },
+      "language_token_ids": {},
+      "symbol_counts_sample": {
+        "a": 68719571,
+        "i": 22459538,
+        "n": 20241343,
+        "h": 19145187,
+        "t": 16984308,
+        "r": 16344076,
+        "u": 15284650,
+        "e": 13961033,
+        "k": 13141063,
+        "l": 12147489,
+        "d": 11019484,
+        "s": 10468436,
+        "m": 10243268,
+        "o": 9673748,
+        "y": 7666719,
+        "p": 7626925,
+        "v": 6667573,
+        "g": 5815215,
+        "b": 4383424,
+        "c": 4328378,
+        "j": 2062662,
+        "w": 1104853,
+        "z": 660571,
+        "f": 649435,
+        "x": 121633,
+        "q": 70628,
+        "madeupword0000": 0,
+        "madeupword0001": 0
+      }
+    },
+    "target": {
+      "path": "/workspace/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic/v1.0/corpus-bin/dict.hi.txt",
+      "size_without_specials": 780,
+      "size_with_fairseq_specials": 784,
+      "first_symbols_without_specials": [
+        "്",
+        "ा",
+        "्",
+        "்",
+        "र",
+        "ി",
+        "ക",
+        "ि",
+        "க",
+        "ന",
+        "न",
+        "್",
+        "ു",
+        "क",
+        "त",
+        "स",
+        "ಿ",
+        "ാ",
+        "ி",
+        "े",
+        "म",
+        "ு",
+        "ത",
+        "த",
+        "य",
+        "్",
+        "व",
+        "ल",
+        "യ",
+        "ी"
+      ],
+      "special_ids": {
+        "<s>": 0,
+        "<pad>": 1,
+        "</s>": 2,
+        "<unk>": 3
+      },
+      "language_token_ids": {},
+      "symbol_counts_sample": {
+        "്": 7831906,
+        "ा": 7753242,
+        "्": 7292980,
+        "்": 6337783,
+        "र": 5136450,
+        "ി": 4077022,
+        "ക": 3716219,
+        "ि": 3476579,
+        "க": 3411613,
+        "ന": 3288280,
+        "न": 3261805,
+        "್": 3259395,
+        "ു": 3250933,
+        "क": 3175462,
+        "त": 3146118,
+        "स": 2934278,
+        "ಿ": 2902907,
+        "ാ": 2868401,
+        "ி": 2806664,
+        "े": 2791797,
+        "म": 2739459,
+        "ு": 2727830,
+        "ത": 2681898,
+        "த": 2650234,
+        "य": 2590723,
+        "్": 2427685,
+        "व": 2394855,
+        "ल": 2367504,
+        "യ": 2252560,
+        "ी": 2082290
+      }
+    }
+  },
+  "tensor_count": 267,
+  "tensor_shape_histogram": {
+    "[1]": 4,
+    "[54, 256]": 1,
+    "[256]": 152,
+    "[256, 256]": 72,
+    "[1024, 256]": 12,
+    "[1024]": 12,
+    "[256, 1024]": 12,
+    "[806, 256]": 2
+  },
+  "mapping_count": 261,
+  "missing_required_sources": [],
+  "mapping": [
+    {
+      "source": "encoder.embed_tokens.weight",
+      "target": "encoder.embedding.vocab_embedding.weight",
+      "name": "encoder.embed_tokens.weight",
+      "exists": true,
+      "shape": [
+        54,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.embed_tokens.weight",
+      "target": "decoder.embedding.vocab_embedding.weight",
+      "name": "decoder.embed_tokens.weight",
+      "exists": true,
+      "shape": [
+        806,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.output_projection.weight",
+      "target": "decoder.lm_head.weight",
+      "name": "decoder.output_projection.weight",
+      "exists": true,
+      "shape": [
+        806,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layernorm_embedding.weight",
+      "target": "encoder.embedding.layernorm.weight",
+      "name": "encoder.layernorm_embedding.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layernorm_embedding.bias",
+      "target": "encoder.embedding.layernorm.bias",
+      "name": "encoder.layernorm_embedding.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layernorm_embedding.weight",
+      "target": "decoder.embedding.layernorm.weight",
+      "name": "decoder.layernorm_embedding.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layernorm_embedding.bias",
+      "target": "decoder.embedding.layernorm.bias",
+      "name": "decoder.layernorm_embedding.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layer_norm.weight",
+      "target": "decoder.final_layernorm.weight",
+      "name": "decoder.layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layer_norm.bias",
+      "target": "decoder.final_layernorm.bias",
+      "name": "decoder.layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.q_proj.weight",
+      "target": "encoder.layers.0.self_attention.q_proj.weight",
+      "name": "encoder.layers.0.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.q_proj.bias",
+      "target": "encoder.layers.0.self_attention.q_proj.bias",
+      "name": "encoder.layers.0.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.k_proj.weight",
+      "target": "encoder.layers.0.self_attention.k_proj.weight",
+      "name": "encoder.layers.0.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.k_proj.bias",
+      "target": "encoder.layers.0.self_attention.k_proj.bias",
+      "name": "encoder.layers.0.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.v_proj.weight",
+      "target": "encoder.layers.0.self_attention.v_proj.weight",
+      "name": "encoder.layers.0.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.v_proj.bias",
+      "target": "encoder.layers.0.self_attention.v_proj.bias",
+      "name": "encoder.layers.0.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.out_proj.weight",
+      "target": "encoder.layers.0.self_attention.out_proj.weight",
+      "name": "encoder.layers.0.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn.out_proj.bias",
+      "target": "encoder.layers.0.self_attention.out_proj.bias",
+      "name": "encoder.layers.0.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn_layer_norm.weight",
+      "target": "encoder.layers.0.self_attn_layer_norm.weight",
+      "name": "encoder.layers.0.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.self_attn_layer_norm.bias",
+      "target": "encoder.layers.0.self_attn_layer_norm.bias",
+      "name": "encoder.layers.0.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.final_layer_norm.weight",
+      "target": "encoder.layers.0.final_layer_norm.weight",
+      "name": "encoder.layers.0.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.final_layer_norm.bias",
+      "target": "encoder.layers.0.final_layer_norm.bias",
+      "name": "encoder.layers.0.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.fc1.weight",
+      "target": "encoder.layers.0.mlp.fc1.weight",
+      "name": "encoder.layers.0.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.fc1.bias",
+      "target": "encoder.layers.0.mlp.fc1.bias",
+      "name": "encoder.layers.0.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.fc2.weight",
+      "target": "encoder.layers.0.mlp.fc2.weight",
+      "name": "encoder.layers.0.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.0.fc2.bias",
+      "target": "encoder.layers.0.mlp.fc2.bias",
+      "name": "encoder.layers.0.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.q_proj.weight",
+      "target": "encoder.layers.1.self_attention.q_proj.weight",
+      "name": "encoder.layers.1.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.q_proj.bias",
+      "target": "encoder.layers.1.self_attention.q_proj.bias",
+      "name": "encoder.layers.1.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.k_proj.weight",
+      "target": "encoder.layers.1.self_attention.k_proj.weight",
+      "name": "encoder.layers.1.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.k_proj.bias",
+      "target": "encoder.layers.1.self_attention.k_proj.bias",
+      "name": "encoder.layers.1.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.v_proj.weight",
+      "target": "encoder.layers.1.self_attention.v_proj.weight",
+      "name": "encoder.layers.1.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.v_proj.bias",
+      "target": "encoder.layers.1.self_attention.v_proj.bias",
+      "name": "encoder.layers.1.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.out_proj.weight",
+      "target": "encoder.layers.1.self_attention.out_proj.weight",
+      "name": "encoder.layers.1.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn.out_proj.bias",
+      "target": "encoder.layers.1.self_attention.out_proj.bias",
+      "name": "encoder.layers.1.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn_layer_norm.weight",
+      "target": "encoder.layers.1.self_attn_layer_norm.weight",
+      "name": "encoder.layers.1.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.self_attn_layer_norm.bias",
+      "target": "encoder.layers.1.self_attn_layer_norm.bias",
+      "name": "encoder.layers.1.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.final_layer_norm.weight",
+      "target": "encoder.layers.1.final_layer_norm.weight",
+      "name": "encoder.layers.1.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.final_layer_norm.bias",
+      "target": "encoder.layers.1.final_layer_norm.bias",
+      "name": "encoder.layers.1.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.fc1.weight",
+      "target": "encoder.layers.1.mlp.fc1.weight",
+      "name": "encoder.layers.1.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.fc1.bias",
+      "target": "encoder.layers.1.mlp.fc1.bias",
+      "name": "encoder.layers.1.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.fc2.weight",
+      "target": "encoder.layers.1.mlp.fc2.weight",
+      "name": "encoder.layers.1.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.1.fc2.bias",
+      "target": "encoder.layers.1.mlp.fc2.bias",
+      "name": "encoder.layers.1.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.q_proj.weight",
+      "target": "encoder.layers.2.self_attention.q_proj.weight",
+      "name": "encoder.layers.2.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.q_proj.bias",
+      "target": "encoder.layers.2.self_attention.q_proj.bias",
+      "name": "encoder.layers.2.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.k_proj.weight",
+      "target": "encoder.layers.2.self_attention.k_proj.weight",
+      "name": "encoder.layers.2.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.k_proj.bias",
+      "target": "encoder.layers.2.self_attention.k_proj.bias",
+      "name": "encoder.layers.2.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.v_proj.weight",
+      "target": "encoder.layers.2.self_attention.v_proj.weight",
+      "name": "encoder.layers.2.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.v_proj.bias",
+      "target": "encoder.layers.2.self_attention.v_proj.bias",
+      "name": "encoder.layers.2.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.out_proj.weight",
+      "target": "encoder.layers.2.self_attention.out_proj.weight",
+      "name": "encoder.layers.2.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn.out_proj.bias",
+      "target": "encoder.layers.2.self_attention.out_proj.bias",
+      "name": "encoder.layers.2.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn_layer_norm.weight",
+      "target": "encoder.layers.2.self_attn_layer_norm.weight",
+      "name": "encoder.layers.2.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.self_attn_layer_norm.bias",
+      "target": "encoder.layers.2.self_attn_layer_norm.bias",
+      "name": "encoder.layers.2.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.final_layer_norm.weight",
+      "target": "encoder.layers.2.final_layer_norm.weight",
+      "name": "encoder.layers.2.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.final_layer_norm.bias",
+      "target": "encoder.layers.2.final_layer_norm.bias",
+      "name": "encoder.layers.2.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.fc1.weight",
+      "target": "encoder.layers.2.mlp.fc1.weight",
+      "name": "encoder.layers.2.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.fc1.bias",
+      "target": "encoder.layers.2.mlp.fc1.bias",
+      "name": "encoder.layers.2.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.fc2.weight",
+      "target": "encoder.layers.2.mlp.fc2.weight",
+      "name": "encoder.layers.2.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.2.fc2.bias",
+      "target": "encoder.layers.2.mlp.fc2.bias",
+      "name": "encoder.layers.2.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.q_proj.weight",
+      "target": "encoder.layers.3.self_attention.q_proj.weight",
+      "name": "encoder.layers.3.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.q_proj.bias",
+      "target": "encoder.layers.3.self_attention.q_proj.bias",
+      "name": "encoder.layers.3.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.k_proj.weight",
+      "target": "encoder.layers.3.self_attention.k_proj.weight",
+      "name": "encoder.layers.3.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.k_proj.bias",
+      "target": "encoder.layers.3.self_attention.k_proj.bias",
+      "name": "encoder.layers.3.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.v_proj.weight",
+      "target": "encoder.layers.3.self_attention.v_proj.weight",
+      "name": "encoder.layers.3.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.v_proj.bias",
+      "target": "encoder.layers.3.self_attention.v_proj.bias",
+      "name": "encoder.layers.3.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.out_proj.weight",
+      "target": "encoder.layers.3.self_attention.out_proj.weight",
+      "name": "encoder.layers.3.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn.out_proj.bias",
+      "target": "encoder.layers.3.self_attention.out_proj.bias",
+      "name": "encoder.layers.3.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn_layer_norm.weight",
+      "target": "encoder.layers.3.self_attn_layer_norm.weight",
+      "name": "encoder.layers.3.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.self_attn_layer_norm.bias",
+      "target": "encoder.layers.3.self_attn_layer_norm.bias",
+      "name": "encoder.layers.3.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.final_layer_norm.weight",
+      "target": "encoder.layers.3.final_layer_norm.weight",
+      "name": "encoder.layers.3.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.final_layer_norm.bias",
+      "target": "encoder.layers.3.final_layer_norm.bias",
+      "name": "encoder.layers.3.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.fc1.weight",
+      "target": "encoder.layers.3.mlp.fc1.weight",
+      "name": "encoder.layers.3.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.fc1.bias",
+      "target": "encoder.layers.3.mlp.fc1.bias",
+      "name": "encoder.layers.3.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.fc2.weight",
+      "target": "encoder.layers.3.mlp.fc2.weight",
+      "name": "encoder.layers.3.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.3.fc2.bias",
+      "target": "encoder.layers.3.mlp.fc2.bias",
+      "name": "encoder.layers.3.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.q_proj.weight",
+      "target": "encoder.layers.4.self_attention.q_proj.weight",
+      "name": "encoder.layers.4.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.q_proj.bias",
+      "target": "encoder.layers.4.self_attention.q_proj.bias",
+      "name": "encoder.layers.4.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.k_proj.weight",
+      "target": "encoder.layers.4.self_attention.k_proj.weight",
+      "name": "encoder.layers.4.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.k_proj.bias",
+      "target": "encoder.layers.4.self_attention.k_proj.bias",
+      "name": "encoder.layers.4.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.v_proj.weight",
+      "target": "encoder.layers.4.self_attention.v_proj.weight",
+      "name": "encoder.layers.4.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.v_proj.bias",
+      "target": "encoder.layers.4.self_attention.v_proj.bias",
+      "name": "encoder.layers.4.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.out_proj.weight",
+      "target": "encoder.layers.4.self_attention.out_proj.weight",
+      "name": "encoder.layers.4.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn.out_proj.bias",
+      "target": "encoder.layers.4.self_attention.out_proj.bias",
+      "name": "encoder.layers.4.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn_layer_norm.weight",
+      "target": "encoder.layers.4.self_attn_layer_norm.weight",
+      "name": "encoder.layers.4.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.self_attn_layer_norm.bias",
+      "target": "encoder.layers.4.self_attn_layer_norm.bias",
+      "name": "encoder.layers.4.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.final_layer_norm.weight",
+      "target": "encoder.layers.4.final_layer_norm.weight",
+      "name": "encoder.layers.4.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.final_layer_norm.bias",
+      "target": "encoder.layers.4.final_layer_norm.bias",
+      "name": "encoder.layers.4.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.fc1.weight",
+      "target": "encoder.layers.4.mlp.fc1.weight",
+      "name": "encoder.layers.4.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.fc1.bias",
+      "target": "encoder.layers.4.mlp.fc1.bias",
+      "name": "encoder.layers.4.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.fc2.weight",
+      "target": "encoder.layers.4.mlp.fc2.weight",
+      "name": "encoder.layers.4.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.4.fc2.bias",
+      "target": "encoder.layers.4.mlp.fc2.bias",
+      "name": "encoder.layers.4.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.q_proj.weight",
+      "target": "encoder.layers.5.self_attention.q_proj.weight",
+      "name": "encoder.layers.5.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.q_proj.bias",
+      "target": "encoder.layers.5.self_attention.q_proj.bias",
+      "name": "encoder.layers.5.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.k_proj.weight",
+      "target": "encoder.layers.5.self_attention.k_proj.weight",
+      "name": "encoder.layers.5.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.k_proj.bias",
+      "target": "encoder.layers.5.self_attention.k_proj.bias",
+      "name": "encoder.layers.5.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.v_proj.weight",
+      "target": "encoder.layers.5.self_attention.v_proj.weight",
+      "name": "encoder.layers.5.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.v_proj.bias",
+      "target": "encoder.layers.5.self_attention.v_proj.bias",
+      "name": "encoder.layers.5.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.out_proj.weight",
+      "target": "encoder.layers.5.self_attention.out_proj.weight",
+      "name": "encoder.layers.5.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn.out_proj.bias",
+      "target": "encoder.layers.5.self_attention.out_proj.bias",
+      "name": "encoder.layers.5.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn_layer_norm.weight",
+      "target": "encoder.layers.5.self_attn_layer_norm.weight",
+      "name": "encoder.layers.5.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.self_attn_layer_norm.bias",
+      "target": "encoder.layers.5.self_attn_layer_norm.bias",
+      "name": "encoder.layers.5.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.final_layer_norm.weight",
+      "target": "encoder.layers.5.final_layer_norm.weight",
+      "name": "encoder.layers.5.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.final_layer_norm.bias",
+      "target": "encoder.layers.5.final_layer_norm.bias",
+      "name": "encoder.layers.5.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.fc1.weight",
+      "target": "encoder.layers.5.mlp.fc1.weight",
+      "name": "encoder.layers.5.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.fc1.bias",
+      "target": "encoder.layers.5.mlp.fc1.bias",
+      "name": "encoder.layers.5.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.fc2.weight",
+      "target": "encoder.layers.5.mlp.fc2.weight",
+      "name": "encoder.layers.5.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "encoder.layers.5.fc2.bias",
+      "target": "encoder.layers.5.mlp.fc2.bias",
+      "name": "encoder.layers.5.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.q_proj.weight",
+      "target": "decoder.layers.0.self_attention.q_proj.weight",
+      "name": "decoder.layers.0.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.q_proj.bias",
+      "target": "decoder.layers.0.self_attention.q_proj.bias",
+      "name": "decoder.layers.0.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.k_proj.weight",
+      "target": "decoder.layers.0.self_attention.k_proj.weight",
+      "name": "decoder.layers.0.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.k_proj.bias",
+      "target": "decoder.layers.0.self_attention.k_proj.bias",
+      "name": "decoder.layers.0.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.v_proj.weight",
+      "target": "decoder.layers.0.self_attention.v_proj.weight",
+      "name": "decoder.layers.0.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.v_proj.bias",
+      "target": "decoder.layers.0.self_attention.v_proj.bias",
+      "name": "decoder.layers.0.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.out_proj.weight",
+      "target": "decoder.layers.0.self_attention.out_proj.weight",
+      "name": "decoder.layers.0.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn.out_proj.bias",
+      "target": "decoder.layers.0.self_attention.out_proj.bias",
+      "name": "decoder.layers.0.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.q_proj.weight",
+      "target": "decoder.layers.0.cross_attention.q_proj.weight",
+      "name": "decoder.layers.0.encoder_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.q_proj.bias",
+      "target": "decoder.layers.0.cross_attention.q_proj.bias",
+      "name": "decoder.layers.0.encoder_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.k_proj.weight",
+      "target": "decoder.layers.0.cross_attention.k_proj.weight",
+      "name": "decoder.layers.0.encoder_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.k_proj.bias",
+      "target": "decoder.layers.0.cross_attention.k_proj.bias",
+      "name": "decoder.layers.0.encoder_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.v_proj.weight",
+      "target": "decoder.layers.0.cross_attention.v_proj.weight",
+      "name": "decoder.layers.0.encoder_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.v_proj.bias",
+      "target": "decoder.layers.0.cross_attention.v_proj.bias",
+      "name": "decoder.layers.0.encoder_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.out_proj.weight",
+      "target": "decoder.layers.0.cross_attention.out_proj.weight",
+      "name": "decoder.layers.0.encoder_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn.out_proj.bias",
+      "target": "decoder.layers.0.cross_attention.out_proj.bias",
+      "name": "decoder.layers.0.encoder_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn_layer_norm.weight",
+      "target": "decoder.layers.0.self_attn_layer_norm.weight",
+      "name": "decoder.layers.0.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.self_attn_layer_norm.bias",
+      "target": "decoder.layers.0.self_attn_layer_norm.bias",
+      "name": "decoder.layers.0.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn_layer_norm.weight",
+      "target": "decoder.layers.0.encoder_attn_layer_norm.weight",
+      "name": "decoder.layers.0.encoder_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.encoder_attn_layer_norm.bias",
+      "target": "decoder.layers.0.encoder_attn_layer_norm.bias",
+      "name": "decoder.layers.0.encoder_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.final_layer_norm.weight",
+      "target": "decoder.layers.0.final_layer_norm.weight",
+      "name": "decoder.layers.0.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.final_layer_norm.bias",
+      "target": "decoder.layers.0.final_layer_norm.bias",
+      "name": "decoder.layers.0.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.fc1.weight",
+      "target": "decoder.layers.0.mlp.fc1.weight",
+      "name": "decoder.layers.0.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.fc1.bias",
+      "target": "decoder.layers.0.mlp.fc1.bias",
+      "name": "decoder.layers.0.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.fc2.weight",
+      "target": "decoder.layers.0.mlp.fc2.weight",
+      "name": "decoder.layers.0.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.0.fc2.bias",
+      "target": "decoder.layers.0.mlp.fc2.bias",
+      "name": "decoder.layers.0.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.q_proj.weight",
+      "target": "decoder.layers.1.self_attention.q_proj.weight",
+      "name": "decoder.layers.1.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.q_proj.bias",
+      "target": "decoder.layers.1.self_attention.q_proj.bias",
+      "name": "decoder.layers.1.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.k_proj.weight",
+      "target": "decoder.layers.1.self_attention.k_proj.weight",
+      "name": "decoder.layers.1.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.k_proj.bias",
+      "target": "decoder.layers.1.self_attention.k_proj.bias",
+      "name": "decoder.layers.1.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.v_proj.weight",
+      "target": "decoder.layers.1.self_attention.v_proj.weight",
+      "name": "decoder.layers.1.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.v_proj.bias",
+      "target": "decoder.layers.1.self_attention.v_proj.bias",
+      "name": "decoder.layers.1.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.out_proj.weight",
+      "target": "decoder.layers.1.self_attention.out_proj.weight",
+      "name": "decoder.layers.1.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn.out_proj.bias",
+      "target": "decoder.layers.1.self_attention.out_proj.bias",
+      "name": "decoder.layers.1.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.q_proj.weight",
+      "target": "decoder.layers.1.cross_attention.q_proj.weight",
+      "name": "decoder.layers.1.encoder_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.q_proj.bias",
+      "target": "decoder.layers.1.cross_attention.q_proj.bias",
+      "name": "decoder.layers.1.encoder_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.k_proj.weight",
+      "target": "decoder.layers.1.cross_attention.k_proj.weight",
+      "name": "decoder.layers.1.encoder_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.k_proj.bias",
+      "target": "decoder.layers.1.cross_attention.k_proj.bias",
+      "name": "decoder.layers.1.encoder_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.v_proj.weight",
+      "target": "decoder.layers.1.cross_attention.v_proj.weight",
+      "name": "decoder.layers.1.encoder_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.v_proj.bias",
+      "target": "decoder.layers.1.cross_attention.v_proj.bias",
+      "name": "decoder.layers.1.encoder_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.out_proj.weight",
+      "target": "decoder.layers.1.cross_attention.out_proj.weight",
+      "name": "decoder.layers.1.encoder_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn.out_proj.bias",
+      "target": "decoder.layers.1.cross_attention.out_proj.bias",
+      "name": "decoder.layers.1.encoder_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn_layer_norm.weight",
+      "target": "decoder.layers.1.self_attn_layer_norm.weight",
+      "name": "decoder.layers.1.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.self_attn_layer_norm.bias",
+      "target": "decoder.layers.1.self_attn_layer_norm.bias",
+      "name": "decoder.layers.1.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn_layer_norm.weight",
+      "target": "decoder.layers.1.encoder_attn_layer_norm.weight",
+      "name": "decoder.layers.1.encoder_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.encoder_attn_layer_norm.bias",
+      "target": "decoder.layers.1.encoder_attn_layer_norm.bias",
+      "name": "decoder.layers.1.encoder_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.final_layer_norm.weight",
+      "target": "decoder.layers.1.final_layer_norm.weight",
+      "name": "decoder.layers.1.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.final_layer_norm.bias",
+      "target": "decoder.layers.1.final_layer_norm.bias",
+      "name": "decoder.layers.1.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.fc1.weight",
+      "target": "decoder.layers.1.mlp.fc1.weight",
+      "name": "decoder.layers.1.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.fc1.bias",
+      "target": "decoder.layers.1.mlp.fc1.bias",
+      "name": "decoder.layers.1.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.fc2.weight",
+      "target": "decoder.layers.1.mlp.fc2.weight",
+      "name": "decoder.layers.1.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.1.fc2.bias",
+      "target": "decoder.layers.1.mlp.fc2.bias",
+      "name": "decoder.layers.1.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.q_proj.weight",
+      "target": "decoder.layers.2.self_attention.q_proj.weight",
+      "name": "decoder.layers.2.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.q_proj.bias",
+      "target": "decoder.layers.2.self_attention.q_proj.bias",
+      "name": "decoder.layers.2.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.k_proj.weight",
+      "target": "decoder.layers.2.self_attention.k_proj.weight",
+      "name": "decoder.layers.2.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.k_proj.bias",
+      "target": "decoder.layers.2.self_attention.k_proj.bias",
+      "name": "decoder.layers.2.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.v_proj.weight",
+      "target": "decoder.layers.2.self_attention.v_proj.weight",
+      "name": "decoder.layers.2.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.v_proj.bias",
+      "target": "decoder.layers.2.self_attention.v_proj.bias",
+      "name": "decoder.layers.2.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.out_proj.weight",
+      "target": "decoder.layers.2.self_attention.out_proj.weight",
+      "name": "decoder.layers.2.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn.out_proj.bias",
+      "target": "decoder.layers.2.self_attention.out_proj.bias",
+      "name": "decoder.layers.2.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.q_proj.weight",
+      "target": "decoder.layers.2.cross_attention.q_proj.weight",
+      "name": "decoder.layers.2.encoder_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.q_proj.bias",
+      "target": "decoder.layers.2.cross_attention.q_proj.bias",
+      "name": "decoder.layers.2.encoder_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.k_proj.weight",
+      "target": "decoder.layers.2.cross_attention.k_proj.weight",
+      "name": "decoder.layers.2.encoder_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.k_proj.bias",
+      "target": "decoder.layers.2.cross_attention.k_proj.bias",
+      "name": "decoder.layers.2.encoder_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.v_proj.weight",
+      "target": "decoder.layers.2.cross_attention.v_proj.weight",
+      "name": "decoder.layers.2.encoder_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.v_proj.bias",
+      "target": "decoder.layers.2.cross_attention.v_proj.bias",
+      "name": "decoder.layers.2.encoder_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.out_proj.weight",
+      "target": "decoder.layers.2.cross_attention.out_proj.weight",
+      "name": "decoder.layers.2.encoder_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn.out_proj.bias",
+      "target": "decoder.layers.2.cross_attention.out_proj.bias",
+      "name": "decoder.layers.2.encoder_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn_layer_norm.weight",
+      "target": "decoder.layers.2.self_attn_layer_norm.weight",
+      "name": "decoder.layers.2.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.self_attn_layer_norm.bias",
+      "target": "decoder.layers.2.self_attn_layer_norm.bias",
+      "name": "decoder.layers.2.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn_layer_norm.weight",
+      "target": "decoder.layers.2.encoder_attn_layer_norm.weight",
+      "name": "decoder.layers.2.encoder_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.encoder_attn_layer_norm.bias",
+      "target": "decoder.layers.2.encoder_attn_layer_norm.bias",
+      "name": "decoder.layers.2.encoder_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.final_layer_norm.weight",
+      "target": "decoder.layers.2.final_layer_norm.weight",
+      "name": "decoder.layers.2.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.final_layer_norm.bias",
+      "target": "decoder.layers.2.final_layer_norm.bias",
+      "name": "decoder.layers.2.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.fc1.weight",
+      "target": "decoder.layers.2.mlp.fc1.weight",
+      "name": "decoder.layers.2.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.fc1.bias",
+      "target": "decoder.layers.2.mlp.fc1.bias",
+      "name": "decoder.layers.2.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.fc2.weight",
+      "target": "decoder.layers.2.mlp.fc2.weight",
+      "name": "decoder.layers.2.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.2.fc2.bias",
+      "target": "decoder.layers.2.mlp.fc2.bias",
+      "name": "decoder.layers.2.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.q_proj.weight",
+      "target": "decoder.layers.3.self_attention.q_proj.weight",
+      "name": "decoder.layers.3.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.q_proj.bias",
+      "target": "decoder.layers.3.self_attention.q_proj.bias",
+      "name": "decoder.layers.3.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.k_proj.weight",
+      "target": "decoder.layers.3.self_attention.k_proj.weight",
+      "name": "decoder.layers.3.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.k_proj.bias",
+      "target": "decoder.layers.3.self_attention.k_proj.bias",
+      "name": "decoder.layers.3.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.v_proj.weight",
+      "target": "decoder.layers.3.self_attention.v_proj.weight",
+      "name": "decoder.layers.3.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.v_proj.bias",
+      "target": "decoder.layers.3.self_attention.v_proj.bias",
+      "name": "decoder.layers.3.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.out_proj.weight",
+      "target": "decoder.layers.3.self_attention.out_proj.weight",
+      "name": "decoder.layers.3.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn.out_proj.bias",
+      "target": "decoder.layers.3.self_attention.out_proj.bias",
+      "name": "decoder.layers.3.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.q_proj.weight",
+      "target": "decoder.layers.3.cross_attention.q_proj.weight",
+      "name": "decoder.layers.3.encoder_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.q_proj.bias",
+      "target": "decoder.layers.3.cross_attention.q_proj.bias",
+      "name": "decoder.layers.3.encoder_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.k_proj.weight",
+      "target": "decoder.layers.3.cross_attention.k_proj.weight",
+      "name": "decoder.layers.3.encoder_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.k_proj.bias",
+      "target": "decoder.layers.3.cross_attention.k_proj.bias",
+      "name": "decoder.layers.3.encoder_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.v_proj.weight",
+      "target": "decoder.layers.3.cross_attention.v_proj.weight",
+      "name": "decoder.layers.3.encoder_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.v_proj.bias",
+      "target": "decoder.layers.3.cross_attention.v_proj.bias",
+      "name": "decoder.layers.3.encoder_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.out_proj.weight",
+      "target": "decoder.layers.3.cross_attention.out_proj.weight",
+      "name": "decoder.layers.3.encoder_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn.out_proj.bias",
+      "target": "decoder.layers.3.cross_attention.out_proj.bias",
+      "name": "decoder.layers.3.encoder_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn_layer_norm.weight",
+      "target": "decoder.layers.3.self_attn_layer_norm.weight",
+      "name": "decoder.layers.3.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.self_attn_layer_norm.bias",
+      "target": "decoder.layers.3.self_attn_layer_norm.bias",
+      "name": "decoder.layers.3.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn_layer_norm.weight",
+      "target": "decoder.layers.3.encoder_attn_layer_norm.weight",
+      "name": "decoder.layers.3.encoder_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.encoder_attn_layer_norm.bias",
+      "target": "decoder.layers.3.encoder_attn_layer_norm.bias",
+      "name": "decoder.layers.3.encoder_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.final_layer_norm.weight",
+      "target": "decoder.layers.3.final_layer_norm.weight",
+      "name": "decoder.layers.3.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.final_layer_norm.bias",
+      "target": "decoder.layers.3.final_layer_norm.bias",
+      "name": "decoder.layers.3.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.fc1.weight",
+      "target": "decoder.layers.3.mlp.fc1.weight",
+      "name": "decoder.layers.3.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.fc1.bias",
+      "target": "decoder.layers.3.mlp.fc1.bias",
+      "name": "decoder.layers.3.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.fc2.weight",
+      "target": "decoder.layers.3.mlp.fc2.weight",
+      "name": "decoder.layers.3.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.3.fc2.bias",
+      "target": "decoder.layers.3.mlp.fc2.bias",
+      "name": "decoder.layers.3.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.q_proj.weight",
+      "target": "decoder.layers.4.self_attention.q_proj.weight",
+      "name": "decoder.layers.4.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.q_proj.bias",
+      "target": "decoder.layers.4.self_attention.q_proj.bias",
+      "name": "decoder.layers.4.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.k_proj.weight",
+      "target": "decoder.layers.4.self_attention.k_proj.weight",
+      "name": "decoder.layers.4.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.k_proj.bias",
+      "target": "decoder.layers.4.self_attention.k_proj.bias",
+      "name": "decoder.layers.4.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.v_proj.weight",
+      "target": "decoder.layers.4.self_attention.v_proj.weight",
+      "name": "decoder.layers.4.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.v_proj.bias",
+      "target": "decoder.layers.4.self_attention.v_proj.bias",
+      "name": "decoder.layers.4.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.out_proj.weight",
+      "target": "decoder.layers.4.self_attention.out_proj.weight",
+      "name": "decoder.layers.4.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn.out_proj.bias",
+      "target": "decoder.layers.4.self_attention.out_proj.bias",
+      "name": "decoder.layers.4.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.q_proj.weight",
+      "target": "decoder.layers.4.cross_attention.q_proj.weight",
+      "name": "decoder.layers.4.encoder_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.q_proj.bias",
+      "target": "decoder.layers.4.cross_attention.q_proj.bias",
+      "name": "decoder.layers.4.encoder_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.k_proj.weight",
+      "target": "decoder.layers.4.cross_attention.k_proj.weight",
+      "name": "decoder.layers.4.encoder_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.k_proj.bias",
+      "target": "decoder.layers.4.cross_attention.k_proj.bias",
+      "name": "decoder.layers.4.encoder_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.v_proj.weight",
+      "target": "decoder.layers.4.cross_attention.v_proj.weight",
+      "name": "decoder.layers.4.encoder_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.v_proj.bias",
+      "target": "decoder.layers.4.cross_attention.v_proj.bias",
+      "name": "decoder.layers.4.encoder_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.out_proj.weight",
+      "target": "decoder.layers.4.cross_attention.out_proj.weight",
+      "name": "decoder.layers.4.encoder_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn.out_proj.bias",
+      "target": "decoder.layers.4.cross_attention.out_proj.bias",
+      "name": "decoder.layers.4.encoder_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn_layer_norm.weight",
+      "target": "decoder.layers.4.self_attn_layer_norm.weight",
+      "name": "decoder.layers.4.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.self_attn_layer_norm.bias",
+      "target": "decoder.layers.4.self_attn_layer_norm.bias",
+      "name": "decoder.layers.4.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn_layer_norm.weight",
+      "target": "decoder.layers.4.encoder_attn_layer_norm.weight",
+      "name": "decoder.layers.4.encoder_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.encoder_attn_layer_norm.bias",
+      "target": "decoder.layers.4.encoder_attn_layer_norm.bias",
+      "name": "decoder.layers.4.encoder_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.final_layer_norm.weight",
+      "target": "decoder.layers.4.final_layer_norm.weight",
+      "name": "decoder.layers.4.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.final_layer_norm.bias",
+      "target": "decoder.layers.4.final_layer_norm.bias",
+      "name": "decoder.layers.4.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.fc1.weight",
+      "target": "decoder.layers.4.mlp.fc1.weight",
+      "name": "decoder.layers.4.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.fc1.bias",
+      "target": "decoder.layers.4.mlp.fc1.bias",
+      "name": "decoder.layers.4.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.fc2.weight",
+      "target": "decoder.layers.4.mlp.fc2.weight",
+      "name": "decoder.layers.4.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.4.fc2.bias",
+      "target": "decoder.layers.4.mlp.fc2.bias",
+      "name": "decoder.layers.4.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.q_proj.weight",
+      "target": "decoder.layers.5.self_attention.q_proj.weight",
+      "name": "decoder.layers.5.self_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.q_proj.bias",
+      "target": "decoder.layers.5.self_attention.q_proj.bias",
+      "name": "decoder.layers.5.self_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.k_proj.weight",
+      "target": "decoder.layers.5.self_attention.k_proj.weight",
+      "name": "decoder.layers.5.self_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.k_proj.bias",
+      "target": "decoder.layers.5.self_attention.k_proj.bias",
+      "name": "decoder.layers.5.self_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.v_proj.weight",
+      "target": "decoder.layers.5.self_attention.v_proj.weight",
+      "name": "decoder.layers.5.self_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.v_proj.bias",
+      "target": "decoder.layers.5.self_attention.v_proj.bias",
+      "name": "decoder.layers.5.self_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.out_proj.weight",
+      "target": "decoder.layers.5.self_attention.out_proj.weight",
+      "name": "decoder.layers.5.self_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn.out_proj.bias",
+      "target": "decoder.layers.5.self_attention.out_proj.bias",
+      "name": "decoder.layers.5.self_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.q_proj.weight",
+      "target": "decoder.layers.5.cross_attention.q_proj.weight",
+      "name": "decoder.layers.5.encoder_attn.q_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.q_proj.bias",
+      "target": "decoder.layers.5.cross_attention.q_proj.bias",
+      "name": "decoder.layers.5.encoder_attn.q_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.k_proj.weight",
+      "target": "decoder.layers.5.cross_attention.k_proj.weight",
+      "name": "decoder.layers.5.encoder_attn.k_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.k_proj.bias",
+      "target": "decoder.layers.5.cross_attention.k_proj.bias",
+      "name": "decoder.layers.5.encoder_attn.k_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.v_proj.weight",
+      "target": "decoder.layers.5.cross_attention.v_proj.weight",
+      "name": "decoder.layers.5.encoder_attn.v_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.v_proj.bias",
+      "target": "decoder.layers.5.cross_attention.v_proj.bias",
+      "name": "decoder.layers.5.encoder_attn.v_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.out_proj.weight",
+      "target": "decoder.layers.5.cross_attention.out_proj.weight",
+      "name": "decoder.layers.5.encoder_attn.out_proj.weight",
+      "exists": true,
+      "shape": [
+        256,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn.out_proj.bias",
+      "target": "decoder.layers.5.cross_attention.out_proj.bias",
+      "name": "decoder.layers.5.encoder_attn.out_proj.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn_layer_norm.weight",
+      "target": "decoder.layers.5.self_attn_layer_norm.weight",
+      "name": "decoder.layers.5.self_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.self_attn_layer_norm.bias",
+      "target": "decoder.layers.5.self_attn_layer_norm.bias",
+      "name": "decoder.layers.5.self_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn_layer_norm.weight",
+      "target": "decoder.layers.5.encoder_attn_layer_norm.weight",
+      "name": "decoder.layers.5.encoder_attn_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.encoder_attn_layer_norm.bias",
+      "target": "decoder.layers.5.encoder_attn_layer_norm.bias",
+      "name": "decoder.layers.5.encoder_attn_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.final_layer_norm.weight",
+      "target": "decoder.layers.5.final_layer_norm.weight",
+      "name": "decoder.layers.5.final_layer_norm.weight",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.final_layer_norm.bias",
+      "target": "decoder.layers.5.final_layer_norm.bias",
+      "name": "decoder.layers.5.final_layer_norm.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.fc1.weight",
+      "target": "decoder.layers.5.mlp.fc1.weight",
+      "name": "decoder.layers.5.fc1.weight",
+      "exists": true,
+      "shape": [
+        1024,
+        256
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.fc1.bias",
+      "target": "decoder.layers.5.mlp.fc1.bias",
+      "name": "decoder.layers.5.fc1.bias",
+      "exists": true,
+      "shape": [
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.fc2.weight",
+      "target": "decoder.layers.5.mlp.fc2.weight",
+      "name": "decoder.layers.5.fc2.weight",
+      "exists": true,
+      "shape": [
+        256,
+        1024
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "source": "decoder.layers.5.fc2.bias",
+      "target": "decoder.layers.5.mlp.fc2.bias",
+      "name": "decoder.layers.5.fc2.bias",
+      "exists": true,
+      "shape": [
+        256
+      ],
+      "dtype": "torch.float32"
+    }
+  ],
+  "ignored": [
+    {
+      "source": "encoder.version",
+      "shape": [
+        1
+      ],
+      "reason": "Fairseq module version marker"
+    },
+    {
+      "source": "encoder.embed_positions._float_tensor",
+      "shape": [
+        1
+      ],
+      "reason": "Fairseq positional embedding sentinel, not a trainable weight"
+    },
+    {
+      "source": "encoder.layer_norm.weight",
+      "shape": [
+        256
+      ],
+      "reason": "not needed for inference conversion"
+    },
+    {
+      "source": "encoder.layer_norm.bias",
+      "shape": [
+        256
+      ],
+      "reason": "not needed for inference conversion"
+    },
+    {
+      "source": "decoder.version",
+      "shape": [
+        1
+      ],
+      "reason": "Fairseq module version marker"
+    },
+    {
+      "source": "decoder.embed_positions._float_tensor",
+      "shape": [
+        1
+      ],
+      "reason": "Fairseq positional embedding sentinel, not a trainable weight"
+    }
+  ],
+  "notes": [
+    "Fairseq uses BOS id 0 (<s>), PAD id 1, EOS id 2, UNK id 3 by default.",
+    "IndicXlit preprocessing prefixes the source character sequence with the target language token, e.g. __hi__.",
+    "TRT-LLM converter must preserve Fairseq pre-layernorm and GELU semantics.",
+    "TRT-LLM target names in this report are descriptive placeholders; final names must match the installed TensorRT-LLM checkpoint schema."
+  ]
+}
