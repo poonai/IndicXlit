@@ -1,0 +1,15 @@
+{
+  "created_at": "2026-07-09T08:05:35.984146+00:00",
+  "fairseq": "/IndicXlit/inference experiment/trtllm_port/artifacts/fairseq_baseline/greedy_postprocess.json",
+  "trtllm": "inference experiment/trtllm_port/artifacts/trtllm_greedy_words.json",
+  "field": "final_postprocessed_best",
+  "expected_count": 22,
+  "compared_count": 22,
+  "missing_count": 0,
+  "match_count": 22,
+  "mismatch_count": 0,
+  "exact_match_rate": 1.0,
+  "passes_greedy_gate": true,
+  "missing_indices": [],
+  "mismatches": []
+}
