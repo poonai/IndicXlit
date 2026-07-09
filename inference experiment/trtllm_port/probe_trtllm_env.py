@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -60,11 +61,18 @@ def main() -> int:
 
     import torch
 
+    executable_dir = Path(sys.executable).resolve().parent
     trtllm_build = shutil.which("trtllm-build")
+    if trtllm_build is None:
+        adjacent_trtllm_build = executable_dir / "trtllm-build"
+        if adjacent_trtllm_build.is_file():
+            trtllm_build = str(adjacent_trtllm_build)
     report = {
         "created_at": datetime.now(timezone.utc).isoformat(),
         "python": sys.version,
         "executable": sys.executable,
+        "path": os.environ.get("PATH"),
+        "ld_library_path": os.environ.get("LD_LIBRARY_PATH"),
         "torch": {
             "version": torch.__version__,
             "cuda": torch.version.cuda,
@@ -100,4 +108,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

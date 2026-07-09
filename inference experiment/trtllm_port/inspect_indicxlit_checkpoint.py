@@ -29,6 +29,7 @@ DEFAULT_MODEL_ROOT = (
 )
 DEFAULT_CHECKPOINT = DEFAULT_MODEL_ROOT / "transformer" / "indicxlit.pt"
 DEFAULT_CORPUS_BIN = DEFAULT_MODEL_ROOT / "corpus-bin"
+DEFAULT_LANG_LIST = DEFAULT_MODEL_ROOT.parent / "lang_list.txt"
 DEFAULT_OUTPUT = Path(__file__).resolve().parent / "artifacts" / "indicxlit_checkpoint_mapping.json"
 
 
@@ -53,7 +54,17 @@ def expect(state: dict[str, object], name: str, missing: list[str], mapping: lis
     mapping.append({"source": name, "target": target, **info})
 
 
-def read_dictionary(path: Path) -> dict[str, object]:
+def read_language_tokens(path: Path) -> list[str]:
+    if not path.is_file():
+        return []
+    return [
+        f"__{line.strip()}__"
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def read_dictionary(path: Path, lang_list: Path | None = None) -> dict[str, object]:
     symbols = []
     counts = []
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -69,12 +80,16 @@ def read_dictionary(path: Path) -> dict[str, object]:
             counts.append(None)
 
     special_symbols = ["<s>", "<pad>", "</s>", "<unk>"]
-    all_symbols = special_symbols + symbols
+    language_tokens = read_language_tokens(lang_list) if lang_list else []
+    all_symbols = special_symbols + symbols + language_tokens
     return {
         "path": str(path),
+        "lang_list": str(lang_list) if lang_list else None,
         "size_without_specials": len(symbols),
+        "language_token_count": len(language_tokens),
         "size_with_fairseq_specials": len(all_symbols),
         "first_symbols_without_specials": symbols[:30],
+        "language_tokens": language_tokens,
         "special_ids": {symbol: index for index, symbol in enumerate(special_symbols)},
         "language_token_ids": {
             symbol: index
@@ -170,6 +185,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Inspect IndicXlit checkpoint for TensorRT-LLM conversion.")
     parser.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--corpus-bin", type=Path, default=DEFAULT_CORPUS_BIN)
+    parser.add_argument("--lang-list", type=Path, default=DEFAULT_LANG_LIST)
     parser.add_argument("--source-lang", default="en")
     parser.add_argument("--target-lang", default="hi")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
@@ -185,8 +201,8 @@ def main() -> int:
     mapping, missing, ignored = build_mapping(state, encoder_layers, decoder_layers)
 
     tensor_shapes = Counter(tuple(shape_of(value)) for value in state.values() if shape_of(value))
-    source_dict = read_dictionary(args.corpus_bin / f"dict.{args.source_lang}.txt")
-    target_dict = read_dictionary(args.corpus_bin / f"dict.{args.target_lang}.txt")
+    source_dict = read_dictionary(args.corpus_bin / f"dict.{args.source_lang}.txt", args.lang_list)
+    target_dict = read_dictionary(args.corpus_bin / f"dict.{args.target_lang}.txt", args.lang_list)
 
     report = {
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -247,4 +263,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

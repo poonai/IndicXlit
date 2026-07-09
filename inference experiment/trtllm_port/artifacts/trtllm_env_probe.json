@@ -1,33 +1,45 @@
 {
-  "created_at": "2026-07-09T04:17:40.139840+00:00",
-  "python": "3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0]",
-  "executable": "/workspace/IndicXlit/.venv/bin/python",
+  "created_at": "2026-07-09T06:41:40.305705+00:00",
+  "python": "3.10.12 (main, Jun 22 2026, 18:55:27) [GCC 11.4.0]",
+  "executable": "/IndicXlit/.venv-trtllm/bin/python",
+  "path": "/IndicXlit/.venv-trtllm/bin:/root/.codex/tmp/arg0/codex-arg0FDTrR7:/root/.vscode-server/cli/servers/Stable-93cfdd489c3b228840d0f86ec77c3636277c93ea/server/bin/remote-cli:/root/.local/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.vscode-server/extensions/openai.chatgpt-26.623.141536-linux-x64/bin/linux-x86_64",
+  "ld_library_path": "/IndicXlit/.venv-trtllm/lib/python3.10/site-packages/nvidia/cu13/lib:/IndicXlit/.venv-trtllm/lib/python3.10/site-packages/tensorrt_libs:",
   "torch": {
-    "version": "2.12.1+cu130",
-    "cuda": "13.0",
+    "version": "2.9.1+cu128",
+    "cuda": "12.8",
     "cuda_available": true,
     "cuda_device_count": 1,
-    "cuda_device_name": "NVIDIA GeForce RTX 5060 Ti"
+    "cuda_device_name": "NVIDIA GeForce RTX 4090"
   },
   "modules": {
     "tensorrt": {
-      "available": false,
-      "error": "ModuleNotFoundError(\"No module named 'tensorrt'\")"
+      "available": true,
+      "version": "10.14.1.48.post1",
+      "file": "/IndicXlit/.venv-trtllm/lib/python3.10/site-packages/tensorrt/__init__.py"
     },
     "tensorrt_llm": {
-      "available": false,
-      "error": "ModuleNotFoundError(\"No module named 'tensorrt_llm'\")"
+      "available": true,
+      "version": "1.2.1",
+      "file": "/IndicXlit/.venv-trtllm/lib/python3.10/site-packages/tensorrt_llm/__init__.py"
     }
   },
   "commands": {
-    "trtllm-build": null,
-    "trtllm-build_help": null,
+    "trtllm-build": "/IndicXlit/.venv-trtllm/bin/trtllm-build",
+    "trtllm-build_help": {
+      "argv": [
+        "/IndicXlit/.venv-trtllm/bin/trtllm-build",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "             Enable the fused multi-head attention during the\n                        context phase, will trigger a kernel that performs the\n                        MHA/MQA/GQA block using a single kernel. (default:\n                        enable)\n  --bert_context_fmha_fp32_acc {enable,disable}\n                        Enable the FP32 accumulator for context FMHA in the\n                        bert_attention_plugin. If disabled, FP16 is used,\n                        better performance but potentially worse accuracy is\n                        expected. (default: disable)\n  --remove_input_padding {enable,disable}\n                        Pack different tokens together, which reduces both the\n                        amount of computations and memory consumption.\n                        (default: enable)\n  --norm_quant_fusion {enable,disable}\n                        Fuse the LayerNorm and quantization kernels into a\n                        single kernel, resulting in improved end-to-end\n                        performance. (default: disable)\n  --reduce_fusion {enable,disable}\n                        Fuse the ResidualAdd and LayerNorm kernels after\n                        AllReduce into a single kernel, resulting in improved\n                        end-to-end performance. (default: disable)\n  --user_buffer {enable,disable}\n                        Eliminate extra copies from the local buffer to the\n                        shared buffer in the communication kernel, leading to\n                        improved end-to-end performance. This feature must be\n                        enabled with `--reduce_fusion enable` and is currently\n                        only supported for the FP8 LLAMA model. (default:\n                        disable)\n  --tokens_per_block TOKENS_PER_BLOCK\n                        Define how many tokens are contained in each paged kv\n                        cache block. (default: 32)\n  --use_paged_context_fmha {enable,disable}\n                        Allow advanced features like KV cache reuse and\n                        chunked context. (default: enable)\n  --use_fp8_context_fmha {enable,disable}\n                        When FP8 quantization is activated, the attention can\n                        be further accelerated by enabling FP8 Context FMHA\n                        (default: enable)\n  --fuse_fp4_quant {enable,disable}\n                        Whether to fuse FP4 quantization into attention\n                        kernel. (default: disable)\n  --multiple_profiles {enable,disable}\n                        Enables multiple TensorRT optimization profiles in the\n                        built engines, will benefits the performance\n                        especially when GEMM plugin is disabled, because more\n                        optimization profiles help TensorRT have more chances\n                        to select better kernels. Note: This feature increases\n                        engine build time but no other adverse effects are\n                        expected. (default: disable)\n  --paged_state {enable,disable}\n                        Enable paged state, which helps manage memory for the\n                        RNN state more efficiently. (default: enable)\n  --streamingllm {enable,disable}\n                        Enable\n                        [StreamingLLM](https://arxiv.org/abs/2309.17453),\n                        which uses a window attention to perform efficient and\n                        stable LLM on long texts. (default: disable)\n  --use_fused_mlp {enable,disable}\n                        Enable horizontal fusion in Gated-MLP that combines\n                        two Matmul operations into a single one followed by a\n                        separate SwiGLU kernel. (default: enable)\n  --pp_reduce_scatter {enable,disable}\n                        Enable a pipeline parallelism optimization with\n                        ReduceScatter + AllGather targeting large MoE models.\n                        (default: disable)\n",
+      "stderr": "/IndicXlit/.venv-trtllm/lib/python3.10/site-packages/modelopt/torch/__init__.py:36: UserWarning: transformers version 4.57.3 is incompatible with nvidia-modelopt and may cause issues. Please install recommended version with `pip install nvidia-modelopt[hf]` if working with HF models.\n  _warnings.warn(\nCurrent Python version 3.10 is below the recommended 3.11 version. It is recommended to upgrade to Python 3.11 or higher for the best experience.\n"
+    },
     "nvidia-smi": {
       "argv": [
         "nvidia-smi"
       ],
       "returncode": 0,
-      "stdout": "Thu Jul  9 04:17:40 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 595.71.05              Driver Version: 595.71.05      CUDA Version: 13.2     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 5060 Ti     On  |   00000000:01:00.0 Off |                  N/A |\n|  0%   45C    P8              9W /  160W |       4MiB /   8151MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+      "stdout": "Thu Jul  9 06:42:06 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 4090        On  |   00000000:81:00.0 Off |                  Off |\n|  0%   28C    P8             12W /  450W |       4MiB /  24564MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
       "stderr": ""
     },
     "nvcc": {
@@ -36,7 +48,7 @@
         "--version"
       ],
       "returncode": 0,
-      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Thu_Mar_19_11:12:51_PM_PDT_2026\nCuda compilation tools, release 13.2, V13.2.78\nBuild cuda_13.2.r13.2/compiler.37668154_0\n",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:18:24_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0\n",
       "stderr": ""
     }
   }
