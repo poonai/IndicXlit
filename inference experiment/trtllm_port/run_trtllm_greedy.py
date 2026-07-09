@@ -76,6 +76,10 @@ def pad_rows(rows: list[list[int]], pad_id: int) -> torch.Tensor:
     return torch.tensor(padded, dtype=torch.int32)
 
 
+def attention_mask_from_padded(padded: torch.Tensor, pad_id: int) -> torch.Tensor:
+    return (padded != pad_id).to(dtype=torch.int32)
+
+
 def decode_ids(ids: list[int], id_to_token: list[str]) -> tuple[list[int], str]:
     cleaned = []
     for token_id in ids:
@@ -157,6 +161,7 @@ def main() -> int:
         pad_token_id=PAD_ID,
         eos_token_id=EOS_ID,
         bos_token_id=BOS_ID,
+        attention_mask=attention_mask_from_padded(encoder_input_ids, PAD_ID),
         return_dict=False,
     )
     torch.cuda.synchronize()

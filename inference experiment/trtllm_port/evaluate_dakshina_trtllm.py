@@ -30,6 +30,7 @@ from run_trtllm_greedy import (  # noqa: E402
     decode_ids,
     encode_preprocessed,
     extract_sequences,
+    attention_mask_from_padded,
     load_vocab,
     normalize_output,
     pad_rows,
@@ -145,6 +146,7 @@ def main() -> int:
             pad_token_id=PAD_ID,
             eos_token_id=EOS_ID,
             bos_token_id=BOS_ID,
+            attention_mask=attention_mask_from_padded(encoder_input_ids, PAD_ID),
             return_dict=False,
         )
         torch.cuda.synchronize()

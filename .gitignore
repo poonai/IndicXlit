@@ -105,6 +105,7 @@ celerybeat.pid
 .env
 .venv
 .venv-trtllm/
+.venv-fairseq/
 env/
 venv/
 ENV/
@@ -141,6 +142,11 @@ inference experiment/trtllm_port/artifacts/trtllm_bundle_en_hi/
 inference experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/
 inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi/
 inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4/
+inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5/
 inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*.json
+inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam5_eval*.json
+inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_greedy*_eval.json
+inference experiment/trtllm_port/artifacts/dakshina_hi_fairseq_beam*_eval*.json
+inference experiment/trtllm_port/artifacts/trtllm_benchmark_batch_decode*.csv
 !inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*_summary.json
 model.cache

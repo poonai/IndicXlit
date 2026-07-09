@@ -134,6 +134,7 @@ class TRTLLMBenchmarkEngine:
             decode_ids,
             encode_preprocessed,
             extract_sequences,
+            attention_mask_from_padded,
             load_vocab,
             normalize_output,
             pad_rows,
@@ -149,6 +150,7 @@ class TRTLLMBenchmarkEngine:
         self.decode_ids = decode_ids
         self.encode_preprocessed = encode_preprocessed
         self.extract_sequences = extract_sequences
+        self.attention_mask_from_padded = attention_mask_from_padded
         self.normalize_output = normalize_output
         self.pad_rows = pad_rows
         self.postprocess_raw = postprocess_raw
@@ -183,6 +185,7 @@ class TRTLLMBenchmarkEngine:
             pad_token_id=self.pad_id,
             eos_token_id=self.eos_id,
             bos_token_id=self.bos_id,
+            attention_mask=self.attention_mask_from_padded(inputs["encoder_input_ids"], self.pad_id),
             return_dict=False,
         )
 

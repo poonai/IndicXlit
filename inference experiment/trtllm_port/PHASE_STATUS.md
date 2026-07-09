@@ -206,10 +206,11 @@ python "inference experiment/benchmark_batch_decode.py" \
   --csv "inference experiment/trtllm_port/artifacts/trtllm_benchmark_batch_decode.csv"
 ```
 
-- Results on the current RTX 4090 fp32 correctness-first engine:
-  - batch 1: `81.52` items/s, `12.27` ms/item
-  - batch 32: `1030.49` items/s, `0.97` ms/item
-  - batch 128: `2694.19` items/s, `0.37` ms/item
+- Correctness-valid masked results on the current RTX 4090 fp32
+  correctness-first engine:
+  - batch 1: `81.10` items/s, `12.33` ms/item
+  - batch 32: `884.10` items/s, `1.13` ms/item
+  - batch 128: `2204.87` items/s, `0.45` ms/item
 
 Beam-4 Dakshina check:
 
@@ -230,18 +231,66 @@ Beam-4 Dakshina check:
   lowercased roman side, deduped pairs.
 - Filtered/evaluated rows: `4502`.
 - README Hindi Dakshina Top-1 target: `60.56`.
-- Clean TRT beam-4 batch-1 result:
-  - artifact: `artifacts/dakshina_hi_trtllm_beam4_eval_b1.json`
-  - Top-1: `2606/4502 = 57.89%`
-  - Top-4: `3006/4502 = 66.77%`
-  - throughput: `62.53` items/s
-- Batched TRT beam-4 is not parity-clean yet:
-  - batch 8 full run produced only `16.44%` Top-1.
-  - the 22-word beam-4 sanity output matched the locked greedy baseline on
-    only `6/22` rows when decoded as a single batch.
-  - batch 1 and batch 2 smoke runs produced plausible candidates, so this
-    appears to be a TensorRT-LLM batched beam/runtime issue rather than a raw
-    weight-copy issue.
+- Fairseq verification environment:
+  - isolated venv: `.venv-fairseq`
+  - `fairseq==0.12.2`
+  - `torch==2.13.0+cu130`
+  - GPU: NVIDIA GeForce RTX 4090
+  - app dependency install and official `word_prob_dicts` rescoring archive
+    are present locally, both ignored by git.
+- Fairseq verification script:
+  `evaluate_dakshina_fairseq.py`.
+- Fairseq beam-5 README-equivalent full Hindi Dakshina result:
+  - artifact: `artifacts/dakshina_hi_fairseq_beam5_eval.json`
+  - rows: `4502`
+  - raw Top-1: `2725/4502 = 60.53%`
+  - raw Top-5: `3921/4502 = 87.09%`
+  - throughput: `159.34` items/s
+  - README target gap: `60.53%` vs `60.56%`, lower by `0.03` percentage
+    points. This verifies the README Hindi Dakshina claim within rounding and
+    evaluation-script noise.
+- Fairseq package-rescored beam-5 result using app alpha `0.9`:
+  - rescored Top-1: `3284/4502 = 72.95%`
+  - rescored Top-5: `3921/4502 = 87.09%`
+- Fairseq package-default beam-4 full Hindi Dakshina result:
+  - artifact: `artifacts/dakshina_hi_fairseq_beam4_eval.json`
+  - rows: `4502`
+  - raw Top-1: `2716/4502 = 60.33%`
+  - raw Top-4: `3812/4502 = 84.67%`
+  - throughput: `171.81` items/s
+- Fairseq package-rescored beam-4 result using app alpha `0.9`:
+  - rescored Top-1: `3253/4502 = 72.26%`
+  - rescored Top-4: `3812/4502 = 84.67%`
+- The README Hindi Dakshina table matches raw Fairseq beam output, not the
+  package's default rescored API output.
+- TensorRT-LLM attention-mask fix:
+  - Root cause of the earlier `57.89%` beam-4 result was missing encoder
+    attention masks in the TRT runner/evaluator. In mixed-length batches,
+    decoder cross-attention could attend to padded encoder positions.
+  - `run_trtllm_greedy.py` now creates `attention_mask = encoder_input_ids !=
+    PAD_ID` and passes it to `EncDecModelRunner.generate`.
+  - `evaluate_dakshina_trtllm.py` uses the same mask for all TRT Dakshina
+    evaluations.
+- Corrected TRT beam-4 result with attention mask:
+  - artifact: `artifacts/dakshina_hi_trtllm_beam4_eval_masked_b32.json`
+  - batch size: `32`
+  - Top-1: `2715/4502 = 60.31%`
+  - Top-4: `3821/4502 = 84.87%`
+  - throughput: `805.74` items/s
+  - Fairseq beam-4 comparison: `2716/4502 = 60.33%` Top-1 and
+    `3812/4502 = 84.67%` Top-4.
+  - Top-1 gap vs Fairseq beam-4: `-0.02` percentage points, one row.
+- Corrected TRT beam-5 README-equivalent result with attention mask:
+  - beam-5 engine dir: `artifacts/trtllm_engines_en_hi_beam5/`
+  - artifact: `artifacts/dakshina_hi_trtllm_beam5_eval_masked_b32.json`
+  - batch size: `32`
+  - Top-1: `2725/4502 = 60.53%`
+  - Top-5: `3920/4502 = 87.07%`
+  - throughput: `799.00` items/s
+  - Fairseq beam-5 comparison: `2725/4502 = 60.53%` Top-1 and
+    `3921/4502 = 87.09%` Top-5.
+  - README Hindi Dakshina target: `60.56`; corrected TRT is within `0.03`
+    percentage points.
 
 Known caveats before optimization:
 
@@ -259,10 +308,9 @@ Known caveats before optimization:
     the matching decoder build with `max_encoder_input_len=32768` failed while
     trying to allocate about `25.17` GB during TensorRT tactic selection, above
     the RTX 4090's 24 GB VRAM.
-- README-level Dakshina parity is not achieved yet. The closest clean TRT
-  beam-4 run is batch 1, Top-1 `57.89%` vs README `60.56%` for Hindi. The
-  remaining gap likely includes the original app/evaluation rescoring path,
-  while the current TRT evaluator uses raw beam scores only.
+- README-level Dakshina parity is now achieved for TensorRT-LLM after the
+  attention-mask fix. The corrected beam-5 TRT result is `60.53%` vs README
+  `60.56%` and Fairseq beam-5 `60.53%`.
 - The current export is fp32 and correctness-first. INT8/FP8/FP16 optimization,
   padding-removal tuning, and larger-batch throughput work are still future
   phases.
