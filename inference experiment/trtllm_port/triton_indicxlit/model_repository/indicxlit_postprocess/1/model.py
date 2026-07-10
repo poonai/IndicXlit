@@ -50,6 +50,11 @@ def normalize_text_value(value) -> str:
     return str(value)
 
 
+def normalize_lang(value, default_lang: str) -> str:
+    lang = normalize_text_value(value).strip().lower()
+    return lang or default_lang
+
+
 def decode_ids(ids, id_to_token: list[str]) -> str:
     pieces = []
     for token_id in ids:
@@ -170,6 +175,7 @@ class TritonPythonModel:
         model_root = Path(params.get("model_root", {}).get("string_value", str(default_model_root)))
         alpha = float(params.get("rescore_alpha", {}).get("string_value", "0.9"))
         self.prompt_len = int(params.get("strip_decoder_prompt_len", {}).get("string_value", "0"))
+        self.default_lang = params.get("default_lang", {}).get("string_value", "hi").strip().lower() or "hi"
         self.processor = IndicXlitPostprocessor(model_root, alpha)
 
     def execute(self, requests):
@@ -182,10 +188,10 @@ class TritonPythonModel:
             cum_log_probs_tensor = pb_utils.get_input_tensor_by_name(request, "CUM_LOG_PROBS")
             sequence_lengths_tensor = pb_utils.get_input_tensor_by_name(request, "SEQUENCE_LENGTH")
 
-            langs = ["hi"] * tokens.shape[0]
+            langs = [self.default_lang] * tokens.shape[0]
             if lang_tensor is not None:
                 lang_values = lang_tensor.as_numpy().reshape(-1)
-                langs = [normalize_text_value(value) for value in lang_values]
+                langs = [normalize_lang(value, self.default_lang) for value in lang_values]
             topk = None
             if topk_tensor is not None:
                 topk = int(topk_tensor.as_numpy().reshape(-1)[0])

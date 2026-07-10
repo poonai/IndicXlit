@@ -47,6 +47,11 @@ def normalize_text_value(value) -> str:
     return str(value)
 
 
+def normalize_lang(value, default_lang: str) -> str:
+    lang = normalize_text_value(value).strip().lower()
+    return lang or default_lang
+
+
 def preprocess_words(words: list[str], target_lang: str) -> list[str]:
     return [f"__{target_lang}__ " + " ".join(list(word.lower())) for word in words]
 
@@ -96,7 +101,8 @@ class TritonPythonModel:
         self.model_root = Path(
             params.get("model_root", {}).get("string_value", str(default_model_root))
         )
-        self.default_lang = params.get("default_lang", {}).get("string_value", "hi")
+        self.default_lang = params.get("default_lang", {}).get("string_value", "hi").strip().lower() or "hi"
+        self.supported_langs = set(read_language_tokens(self.model_root / "lang_list.txt"))
 
     def execute(self, requests):
         responses = []
@@ -110,7 +116,14 @@ class TritonPythonModel:
             if lang_tensor is not None:
                 lang_values = lang_tensor.as_numpy()
                 if lang_values.size:
-                    target_lang = normalize_text_value(lang_values.reshape(-1)[0])
+                    target_lang = normalize_lang(lang_values.reshape(-1)[0], self.default_lang)
+            if target_lang not in self.supported_langs:
+                message = (
+                    f"Unsupported target_lang={target_lang!r}; "
+                    f"supported={sorted(self.supported_langs)}"
+                )
+                responses.append(pb_utils.InferenceResponse(error=pb_utils.TritonError(message)))
+                continue
             request_output_len = 32
             if max_tokens_tensor is not None:
                 request_output_len = int(max_tokens_tensor.as_numpy().reshape(-1)[0])

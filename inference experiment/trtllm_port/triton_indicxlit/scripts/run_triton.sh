@@ -8,6 +8,7 @@ TRITON_HOME="${TRITON_HOME:-/tmp/tritonserver-2.70.0/tritonserver}"
 TRITON_BIN="${TRITON_BIN:-${TRITON_HOME}/bin/tritonserver}"
 TRTLLM_VENV="${TRTLLM_VENV:-${REPO_ROOT}/.venv-trtllm}"
 TRTLLM_SITE="${TRTLLM_SITE:-${TRTLLM_VENV}/lib/python3.10/site-packages}"
+TRITON_PY312_SITE="${TRITON_PY312_SITE:-${REPO_ROOT}/.venv-triton-py312/lib/python3.12/site-packages}"
 
 if [[ ! -x "${TRITON_BIN}" ]]; then
   TRITON_BIN="$(command -v tritonserver)"
@@ -16,7 +17,7 @@ fi
 TRITON_ROOT="$(cd "$(dirname "${TRITON_BIN}")/.." && pwd)"
 
 export PYTHONHOME="${PYTHONHOME:-/usr}"
-export PYTHONPATH="${PYTHONPATH:-/usr/local/lib/python3.12/dist-packages:/usr/lib/python3.12:/usr/lib/python3.12/lib-dynload:/usr/lib/python3/dist-packages}"
+export PYTHONPATH="${PYTHONPATH:-${TRITON_PY312_SITE}:${TRITON_ROOT}/backends/python:/usr/local/lib/python3.12/dist-packages:/usr/lib/python3.12:/usr/lib/python3.12/lib-dynload:/usr/lib/python3/dist-packages}"
 export LD_LIBRARY_PATH="${TRTLLM_SITE}/tensorrt_llm/libs:${TRTLLM_SITE}/torch/lib:${TRTLLM_SITE}/nvidia/cuda_runtime/lib:${TRTLLM_SITE}/nvidia/cu13/lib:${TRTLLM_SITE}/nvidia/cudnn/lib:${TRTLLM_SITE}/nvidia/cublas/lib:${TRTLLM_SITE}/nvidia/nccl/lib:/usr/lib/x86_64-linux-gnu:/tmp/tritonserver-2.70.0/cuda13/nvidia/cu13/lib:/tmp/tritonserver-2.70.0/compat/root/usr/lib/x86_64-linux-gnu:/tmp/tritonserver-2.70.0/dcgm/root/usr/lib/x86_64-linux-gnu:/tmp/tritonserver-2.70.0/libarchive/root/usr/lib/x86_64-linux-gnu:${TRITON_ROOT}/backends/python:${TRITON_ROOT}/lib64:${LD_LIBRARY_PATH:-}"
 
 ARGS=(

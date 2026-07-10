@@ -61,15 +61,15 @@ def fairseq_sinusoidal_positions(num_embeddings: int, embedding_dim: int, paddin
     return table[padding_idx + 1 : padding_idx + 1 + num_embeddings].contiguous()
 
 
-def common_config(*, architecture: str, vocab_size: int, layers: int, hidden: int, ffn: int, heads: int):
+def common_config(*, architecture: str, vocab_size: int, layers: int, hidden: int, ffn: int, heads: int, dtype: str):
     from tensorrt_llm.functional import LayerNormPositionType, LayerNormType, MLPType
     from tensorrt_llm.mapping import Mapping
     from tensorrt_llm.models.modeling_utils import PretrainedConfig
 
     return PretrainedConfig(
         architecture=architecture,
-        dtype="float32",
-        logits_dtype="float32",
+        dtype=dtype,
+        logits_dtype=dtype,
         vocab_size=vocab_size,
         hidden_size=hidden,
         num_hidden_layers=layers,
@@ -161,7 +161,19 @@ def decoder_weights(state: dict[str, torch.Tensor], layers: int) -> dict[str, to
     return weights
 
 
-def validate_and_save(component: str, model_cls, config, weights: dict[str, torch.Tensor], output_dir: Path) -> dict[str, object]:
+def cast_floating_weights(weights: dict[str, torch.Tensor], dtype: str) -> dict[str, torch.Tensor]:
+    torch_dtype = {
+        "float32": torch.float32,
+        "float16": torch.float16,
+        "bfloat16": torch.bfloat16,
+    }[dtype]
+    return {
+        name: tensor.to(dtype=torch_dtype) if tensor.is_floating_point() else tensor
+        for name, tensor in weights.items()
+    }
+
+
+def validate_and_save(component: str, model_cls, config, weights: dict[str, torch.Tensor], output_dir: Path, dtype: str) -> dict[str, object]:
     output_dir.mkdir(parents=True, exist_ok=True)
     model = model_cls(config)
     expected = {name: list(param.raw_value.shape) for name, param in model.named_parameters()}
@@ -185,7 +197,7 @@ def validate_and_save(component: str, model_cls, config, weights: dict[str, torc
                 indent=2,
             )
         )
-    model.load(weights)
+    model.load(cast_floating_weights(weights, dtype))
     model.save_checkpoint(str(output_dir), save_config=True)
     return {
         "component": component,
@@ -200,6 +212,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Convert IndicXlit Fairseq checkpoint to TensorRT-LLM checkpoint.")
     parser.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--dtype", choices=["float32", "float16", "bfloat16"], default="float32")
     args = parser.parse_args()
 
     if not args.checkpoint.is_file():
@@ -225,6 +238,7 @@ def main() -> int:
         hidden=hidden,
         ffn=ffn,
         heads=heads,
+        dtype=args.dtype,
     )
     decoder_config = common_config(
         architecture="DecoderModel",
@@ -233,6 +247,7 @@ def main() -> int:
         hidden=hidden,
         ffn=ffn,
         heads=heads,
+        dtype=args.dtype,
     )
     decoder_config.encoder_hidden_size = hidden
     decoder_config.encoder_num_heads = heads
@@ -248,6 +263,7 @@ def main() -> int:
             encoder_config,
             encoder_weights(state, encoder_layers),
             args.output_dir / "encoder",
+            args.dtype,
         ),
         validate_and_save(
             "decoder",
@@ -255,6 +271,7 @@ def main() -> int:
             decoder_config,
             decoder_weights(state, decoder_layers),
             args.output_dir / "decoder",
+            args.dtype,
         ),
     ]
 
@@ -262,7 +279,7 @@ def main() -> int:
         "created_at": datetime.now(timezone.utc).isoformat(),
         "checkpoint": str(args.checkpoint),
         "output_dir": str(args.output_dir),
-        "precision": "float32",
+        "precision": args.dtype,
         "source_vocab": source_vocab,
         "target_vocab": target_vocab,
         "encoder_layers": encoder_layers,

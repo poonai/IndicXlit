@@ -1,6 +1,6 @@
 name: "indicxlit_tensorrt_llm"
 backend: "tensorrtllm"
-max_batch_size: 128
+max_batch_size: 256
 
 model_transaction_policy {
   decoupled: false
@@ -16,7 +16,8 @@ input [
   { name: "pad_id" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } },
   { name: "beam_width" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } optional: true },
   { name: "num_return_sequences" data_type: TYPE_INT32 dims: [ 1 ] reshape: { shape: [ ] } optional: true },
-  { name: "return_log_probs" data_type: TYPE_BOOL dims: [ 1 ] reshape: { shape: [ ] } optional: true }
+  { name: "return_log_probs" data_type: TYPE_BOOL dims: [ 1 ] reshape: { shape: [ ] } optional: true },
+  { name: "cross_attention_mask" data_type: TYPE_BOOL dims: [ -1, -1 ] optional: true allow_ragged_batch: true }
 ]
 
 output [
@@ -40,11 +41,11 @@ parameters {
 }
 parameters {
   key: "gpt_model_path"
-  value: { string_value: "/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/decoder" }
+  value: { string_value: "/workspace/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton_fp16_b256/decoder" }
 }
 parameters {
   key: "encoder_model_path"
-  value: { string_value: "/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/encoder" }
+  value: { string_value: "/workspace/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton_fp16_b256/encoder" }
 }
 parameters {
   key: "max_beam_width"
@@ -72,11 +73,11 @@ parameters {
 }
 parameters {
   key: "kv_cache_free_gpu_mem_fraction"
-  value: { string_value: "0.8" }
+  value: { string_value: "0.35" }
 }
 parameters {
   key: "cross_kv_cache_fraction"
-  value: { string_value: "0.5" }
+  value: { string_value: "0.35" }
 }
 parameters {
   key: "logits_datatype"

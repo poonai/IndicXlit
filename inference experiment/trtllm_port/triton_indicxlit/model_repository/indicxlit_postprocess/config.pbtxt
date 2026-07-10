@@ -23,7 +23,7 @@ output [
 
 parameters {
   key: "model_root"
-  value: { string_value: "/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic" }
+  value: { string_value: "/workspace/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic" }
 }
 parameters {
   key: "rescore_alpha"
@@ -33,4 +33,3 @@ parameters {
 instance_group [
   { count: 1 kind: KIND_CPU }
 ]
-
