@@ -151,3 +151,19 @@ inference experiment/trtllm_port/artifacts/dakshina_hi_fairseq_beam*_eval*.json
 inference experiment/trtllm_port/artifacts/trtllm_benchmark_batch_decode*.csv
 !inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*_summary.json
 model.cache
+
+# Local downloads and Triton Python helper venv.
+.downloads/
+.venv-triton-py312/
+
+# TensorRT-LLM generated checkpoints, engines, logs, traces, and packaged contexts.
+inference experiment/trtllm_port/artifacts/build_metrics_*/
+inference experiment/trtllm_port/artifacts/cpp_executor_*/
+inference experiment/trtllm_port/artifacts/nsight_*/
+inference experiment/trtllm_port/artifacts/triton_benchmark_*/
+inference experiment/trtllm_port/artifacts/trtllm_checkpoint_*/
+inference experiment/trtllm_port/artifacts/trtllm_engines_*/
+inference experiment/trtllm_port/artifacts/indicxlit_trtllm_*_docker_context.tar.gz
+inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam5_fp16_*.json
+inference experiment/trtllm_port/docker_b256/context/
+inference experiment/trtllm_port/artifacts/trtllm_fp16_smoke.json
