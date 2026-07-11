@@ -41,11 +41,11 @@ parameters {
 }
 parameters {
   key: "gpt_model_path"
-  value: { string_value: "/workspace/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton_fp16_b256/decoder" }
+  value: { string_value: "/models/engines/b256/decoder" }
 }
 parameters {
   key: "encoder_model_path"
-  value: { string_value: "/workspace/IndicXlit/inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton_fp16_b256/encoder" }
+  value: { string_value: "/models/engines/b256/encoder" }
 }
 parameters {
   key: "max_beam_width"

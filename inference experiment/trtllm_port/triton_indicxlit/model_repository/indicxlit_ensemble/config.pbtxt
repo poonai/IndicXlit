@@ -1,6 +1,6 @@
 name: "indicxlit_ensemble"
 platform: "ensemble"
-max_batch_size: 128
+max_batch_size: 256
 
 input [
   { name: "text_input" data_type: TYPE_STRING dims: [ 1 ] },
@@ -25,6 +25,7 @@ ensemble_scheduling {
       input_map { key: "TARGET_LANG" value: "target_lang" }
       input_map { key: "REQUEST_OUTPUT_LEN" value: "max_tokens" }
       output_map { key: "INPUT_ID" value: "_INPUT_ID" }
+      output_map { key: "CROSS_ATTENTION_MASK" value: "_CROSS_ATTENTION_MASK" }
       output_map { key: "REQUEST_INPUT_LEN" value: "_REQUEST_INPUT_LEN" }
       output_map { key: "DECODER_INPUT_ID" value: "_DECODER_INPUT_ID" }
       output_map { key: "REQUEST_DECODER_INPUT_LEN" value: "_REQUEST_DECODER_INPUT_LEN" }
@@ -37,6 +38,7 @@ ensemble_scheduling {
       model_name: "indicxlit_tensorrt_llm"
       model_version: -1
       input_map { key: "input_ids" value: "_INPUT_ID" }
+      input_map { key: "cross_attention_mask" value: "_CROSS_ATTENTION_MASK" }
       input_map { key: "decoder_input_ids" value: "_DECODER_INPUT_ID" }
       input_map { key: "input_lengths" value: "_REQUEST_INPUT_LEN" }
       input_map { key: "decoder_input_lengths" value: "_REQUEST_DECODER_INPUT_LEN" }
@@ -64,4 +66,3 @@ ensemble_scheduling {
     }
   ]
 }
-

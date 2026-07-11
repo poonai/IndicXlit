@@ -1,9 +1,9 @@
 name: "indicxlit_postprocess"
-backend: "python"
-max_batch_size: 128
+backend: "indicxlit_postprocess"
+max_batch_size: 256
 
 dynamic_batching {
-  preferred_batch_size: [ 32, 64, 128 ]
+  preferred_batch_size: [ 32, 64, 128, 256 ]
   max_queue_delay_microseconds: 3000
 }
 
@@ -20,15 +20,6 @@ output [
   { name: "TEXT_OUTPUT" data_type: TYPE_STRING dims: [ 1 ] },
   { name: "CANDIDATES_JSON" data_type: TYPE_STRING dims: [ 1 ] }
 ]
-
-parameters {
-  key: "model_root"
-  value: { string_value: "/workspace/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic" }
-}
-parameters {
-  key: "rescore_alpha"
-  value: { string_value: "0.9" }
-}
 
 instance_group [
   { count: 1 kind: KIND_CPU }

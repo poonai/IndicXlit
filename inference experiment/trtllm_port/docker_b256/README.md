@@ -1,85 +1,85 @@
-# IndicXlit TensorRT-LLM b256 Docker image
+# IndicXlit b256 production stack
 
-This packages the FP16 beam-5 max-batch-256 TensorRT-LLM Triton core model for
-remote load testing.
+This deployment serves the FP16 beam-5, max-batch-256 encoder/decoder through a
+complete Triton ensemble:
 
-It serves only the core `indicxlit_tensorrt_llm` model, not the Python
-preprocess/postprocess ensemble. The included k6 script sends pre-tokenized
-Triton HTTP inference requests with `beam_width=5`, `num_return_sequences=5`,
-and `cross_attention_mask` populated.
+```text
+client -> NGINX (least_conn) -> Triton replica 1/2
+                                C++ preprocess
+                                TensorRT-LLM
+                                C++ postprocess
+```
 
-## Build context
+Both inference containers use NVIDIA MPS on one selected GPU. Prometheus
+scrapes both Triton replicas, NGINX, and DCGM; Grafana provisions the
+`IndicXlit b256 Production` dashboard. The public inference port is `8000`,
+Prometheus is `9090`, and Grafana is `3000`.
 
-From the repo root:
+## Prerequisites
+
+- Linux NVIDIA driver compatible with the CUDA 13/Triton 25.06 images
+- NVIDIA Container Toolkit configured for Docker
+- Docker Compose with `gpus` support
+- FP16 b256 engines at
+  `artifacts/trtllm_engines_en_hi_beam5_triton_fp16_b256/{encoder,decoder}`
+- complete `en2indic` assets, including dictionaries and `lang_list.txt`
+
+The engines and model payloads are generated/downloaded artifacts and remain
+outside Git by design.
+
+## Build and run
+
+From the repository root:
 
 ```bash
 bash "inference experiment/trtllm_port/docker_b256/prepare_context.sh"
+docker compose \
+  -f "inference experiment/trtllm_port/docker_b256/docker-compose.yml" \
+  build
+docker compose \
+  -f "inference experiment/trtllm_port/docker_b256/docker-compose.yml" \
+  up -d
 ```
 
-This creates:
-
-```text
-inference experiment/trtllm_port/docker_b256/context/
-```
-
-## Build image
+Select another GPU or override the per-client MPS thread cap if required. The
+packaged engines are built with a 50% cap and must run with the same value so
+TensorRT sees the same 36-SM A10 topology at build and runtime.
 
 ```bash
-docker build \
-  -t indicxlit-trtllm:b256-fp16 \
-  "inference experiment/trtllm_port/docker_b256/context"
+CUDA_VISIBLE_DEVICES=1 MPS_ACTIVE_THREAD_PERCENTAGE=50 docker compose \
+  -f "inference experiment/trtllm_port/docker_b256/docker-compose.yml" up -d
 ```
 
-The Dockerfile defaults to:
+MPS requires the inference and MPS containers to share the host PID/IPC
+namespaces and the MPS pipe volume. Do not deploy this Compose file on an
+untrusted shared Docker host.
 
-```text
-nvcr.io/nvidia/tritonserver:25.06-trtllm-python-py3
-```
-
-If your target environment uses a different TensorRT-LLM/Triton container, pass:
-
-```bash
-docker build \
-  --build-arg BASE_IMAGE=<your-triton-trtllm-image> \
-  -t indicxlit-trtllm:b256-fp16 \
-  "inference experiment/trtllm_port/docker_b256/context"
-```
-
-## Run server
-
-```bash
-docker run --rm --gpus all \
-  -p 8000:8000 \
-  -p 8002:8002 \
-  indicxlit-trtllm:b256-fp16
-```
-
-Health:
+## Verify
 
 ```bash
 curl -f http://localhost:8000/v2/health/ready
+python3 "inference experiment/trtllm_port/docker_b256/scripts/smoke_ensemble.py"
+curl -f http://localhost:9090/-/ready
+curl -f http://localhost:3000/api/health
 ```
 
-Smoke:
+The public model is `indicxlit_ensemble`. It accepts concurrent single-item
+requests as documented in `CHAT_HANDOFF.md`; true client-side batches remain
+limited by the non-decoupled TensorRT-LLM/static-ensemble contract.
+
+The native postprocessor decodes beam candidates. Dictionary probability
+rescoring is intentionally not performed in the native backend; keep
+`rescore=false` (the production default). This avoids bringing JSON dictionaries
+and per-request CPU sorting into the latency-sensitive path.
+
+## Operations
 
 ```bash
-python3 "inference experiment/trtllm_port/docker_b256/context/scripts/smoke_core.py" \
-  --url http://localhost:8000
+docker compose -f "inference experiment/trtllm_port/docker_b256/docker-compose.yml" ps
+docker compose -f "inference experiment/trtllm_port/docker_b256/docker-compose.yml" logs -f inference-1 inference-2
+docker compose -f "inference experiment/trtllm_port/docker_b256/docker-compose.yml" down
 ```
 
-## k6, 256 VUs
-
-```bash
-k6 run \
-  -e URL=http://localhost:8000 \
-  -e VUS=256 \
-  -e DURATION=60s \
-  "inference experiment/trtllm_port/docker_b256/context/k6/core_b256.js"
-```
-
-The k6 script posts to:
-
-```text
-/v2/models/indicxlit_tensorrt_llm/infer
-```
-
+Change `GRAFANA_ADMIN_PASSWORD` before exposing Grafana outside localhost.
+The DCGM exporter needs `SYS_ADMIN`; remove the service and its Prometheus job
+if GPU telemetry is not required or that capability is prohibited.
