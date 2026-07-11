@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: IndicXlit b256
+    folder: IndicXlit
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.17)
+project(indicxlit_native_backends LANGUAGES CXX)
+
+include(FetchContent)
+set(TRITON_TAG "r25.06" CACHE STRING "Triton repository tag")
+set(TRITON_REPO_ORGANIZATION "https://github.com/triton-inference-server")
+set(TRITON_COMMON_REPO_TAG "${TRITON_TAG}")
+set(TRITON_CORE_REPO_TAG "${TRITON_TAG}")
+set(TRITON_BACKEND_REPO_TAG "${TRITON_TAG}")
+
+FetchContent_Declare(repo-common GIT_REPOSITORY ${TRITON_REPO_ORGANIZATION}/common.git GIT_TAG ${TRITON_COMMON_REPO_TAG} GIT_SHALLOW ON)
+FetchContent_Declare(repo-core GIT_REPOSITORY ${TRITON_REPO_ORGANIZATION}/core.git GIT_TAG ${TRITON_CORE_REPO_TAG} GIT_SHALLOW ON)
+FetchContent_Declare(repo-backend GIT_REPOSITORY ${TRITON_REPO_ORGANIZATION}/backend.git GIT_TAG ${TRITON_BACKEND_REPO_TAG} GIT_SHALLOW ON)
+FetchContent_MakeAvailable(repo-common repo-core repo-backend)
+
+foreach(backend IN ITEMS indicxlit_preprocess indicxlit_postprocess)
+  add_library(${backend} SHARED src/${backend}.cc)
+  target_compile_features(${backend} PRIVATE cxx_std_17)
+  target_compile_options(${backend} PRIVATE -Wall -Wextra -Werror -Wno-unused-parameter)
+  target_link_libraries(${backend} PRIVATE triton-core-serverapi triton-core-backendapi triton-core-serverstub triton-backend-utils)
+  set_target_properties(${backend} PROPERTIES OUTPUT_NAME triton_${backend} POSITION_INDEPENDENT_CODE ON)
+  install(TARGETS ${backend} LIBRARY DESTINATION backends/${backend})
+endforeach()

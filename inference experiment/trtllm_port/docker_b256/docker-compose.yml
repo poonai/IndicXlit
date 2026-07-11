@@ -1,0 +1,98 @@
+name: indicxlit-b256
+
+x-inference: &inference
+  image: indicxlit-trtllm:b256-fp16-native
+  build:
+    context: ./context
+  restart: unless-stopped
+  gpus: all
+  ipc: host
+  pid: host
+  environment:
+    CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
+    CUDA_MPS_PIPE_DIRECTORY: /tmp/nvidia-mps
+    CUDA_MPS_ACTIVE_THREAD_PERCENTAGE: "${MPS_ACTIVE_THREAD_PERCENTAGE:-50}"
+  volumes:
+    - mps-pipe:/tmp/nvidia-mps
+  depends_on:
+    mps:
+      condition: service_started
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:8000/v2/health/ready"]
+    interval: 10s
+    timeout: 5s
+    retries: 30
+    start_period: 120s
+
+services:
+  mps:
+    image: nvidia/cuda:13.0.0-base-ubuntu22.04
+    restart: unless-stopped
+    gpus: all
+    ipc: host
+    pid: host
+    environment:
+      CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
+      CUDA_MPS_PIPE_DIRECTORY: /tmp/nvidia-mps
+      CUDA_MPS_LOG_DIRECTORY: /tmp/nvidia-log
+    volumes:
+      - mps-pipe:/tmp/nvidia-mps
+      - mps-log:/tmp/nvidia-log
+      - ./mps-entrypoint.sh:/opt/indicxlit/mps-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/opt/indicxlit/mps-entrypoint.sh"]
+
+  inference-1:
+    <<: *inference
+  inference-2:
+    <<: *inference
+
+  nginx:
+    image: nginx:1.27.3-alpine
+    restart: unless-stopped
+    ports: ["8000:8000"]
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      inference-1: { condition: service_healthy }
+      inference-2: { condition: service_healthy }
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.4.0
+    restart: unless-stopped
+    command: ["--nginx.scrape-uri=http://nginx:8000/nginx_status"]
+    depends_on: [nginx]
+
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.1.1-4.0.4-ubuntu22.04
+    restart: unless-stopped
+    gpus: all
+    cap_add: [SYS_ADMIN]
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    restart: unless-stopped
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    ports: ["9090:9090"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    restart: unless-stopped
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER:-admin}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:-admin}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+
+volumes:
+  mps-pipe:
+  mps-log:
+  prometheus-data:
+  grafana-data:

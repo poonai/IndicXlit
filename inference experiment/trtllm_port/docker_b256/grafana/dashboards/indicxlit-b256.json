@@ -1,0 +1,14 @@
+{
+  "uid": "indicxlit-b256", "title": "IndicXlit b256 Production", "schemaVersion": 39,
+  "refresh": "5s", "time": {"from": "now-15m", "to": "now"},
+  "panels": [
+    {"id": 1, "type": "timeseries", "title": "Ensemble request rate by replica", "gridPos": {"x": 0,"y": 0,"w": 12,"h": 8}, "targets": [{"refId":"A","expr":"sum by (instance) (rate(nv_inference_request_success{model=\"indicxlit_ensemble\"}[1m]))","legendFormat":"{{instance}}"}]},
+    {"id": 2, "type": "timeseries", "title": "Ensemble average latency", "gridPos": {"x": 12,"y": 0,"w": 12,"h": 8}, "targets": [{"refId":"A","expr":"sum by(instance)(rate(nv_inference_request_duration_us{model=\"indicxlit_ensemble\"}[5m])) / sum by(instance)(rate(nv_inference_request_success{model=\"indicxlit_ensemble\"}[5m])) / 1000","legendFormat":"{{instance}} ms"}]},
+    {"id": 3, "type": "timeseries", "title": "NGINX connections", "gridPos": {"x": 0,"y": 8,"w": 8,"h": 8}, "targets": [{"refId":"A","expr":"nginx_connections_active","legendFormat":"active"},{"refId":"B","expr":"rate(nginx_http_requests_total[1m])","legendFormat":"requests/s"}]},
+    {"id": 4, "type": "timeseries", "title": "GPU utilization", "gridPos": {"x": 8,"y": 8,"w": 8,"h": 8}, "targets": [{"refId":"A","expr":"DCGM_FI_DEV_GPU_UTIL","legendFormat":"GPU {{gpu}}"}]},
+    {"id": 5, "type": "timeseries", "title": "GPU framebuffer memory", "gridPos": {"x": 16,"y": 8,"w": 8,"h": 8}, "targets": [{"refId":"A","expr":"DCGM_FI_DEV_FB_USED","legendFormat":"used {{gpu}}"}]},
+    {"id": 6, "type": "timeseries", "title": "TRT-LLM inflight batcher", "gridPos": {"x": 0,"y": 16,"w": 24,"h": 8}, "targets": [{"refId":"A","expr":"nv_trt_llm_request_metrics","legendFormat":"{{instance}} {{request_type}}"}]},
+    {"id": 7, "type": "timeseries", "title": "Average latency by pipeline stage", "gridPos": {"x": 0,"y": 24,"w": 12,"h": 8}, "fieldConfig": {"defaults": {"unit": "ms"}}, "targets": [{"refId":"A","expr":"sum by(instance, model) (rate(nv_inference_request_duration_us{model=~\"indicxlit_preprocess|indicxlit_tensorrt_llm|indicxlit_postprocess\"}[1m])) / sum by(instance, model) (rate(nv_inference_request_success{model=~\"indicxlit_preprocess|indicxlit_tensorrt_llm|indicxlit_postprocess\"}[1m])) / 1000","legendFormat":"{{instance}} {{model}}"}]},
+    {"id": 8, "type": "timeseries", "title": "Effective batch size by pipeline stage", "gridPos": {"x": 12,"y": 24,"w": 12,"h": 8}, "targets": [{"refId":"A","expr":"sum by(instance, model) (rate(nv_inference_count{model=~\"indicxlit_preprocess|indicxlit_tensorrt_llm|indicxlit_postprocess\"}[1m])) / sum by(instance, model) (rate(nv_inference_exec_count{model=~\"indicxlit_preprocess|indicxlit_tensorrt_llm|indicxlit_postprocess\"}[1m]))","legendFormat":"{{instance}} {{model}}"}]}
+  ]
+}
