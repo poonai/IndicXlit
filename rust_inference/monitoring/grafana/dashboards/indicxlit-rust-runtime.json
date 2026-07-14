@@ -199,7 +199,7 @@
       "id": 11,
       "type": "timeseries",
       "title": "Configured Runtime",
-      "gridPos": {"x": 0, "y": 29, "w": 24, "h": 6},
+      "gridPos": {"x": 0, "y": 29, "w": 12, "h": 6},
       "targets": [
         {
           "refId": "A",
@@ -215,6 +215,63 @@
           "refId": "C",
           "expr": "indicxlit_config_batch_delay_microseconds{job=\"indicxlit-rust\"}",
           "legendFormat": "batch delay us"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Rescoring",
+      "gridPos": {"x": 12, "y": 29, "w": 12, "h": 6},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(status, lang) (rate(indicxlit_rescore_rows_total{job=\"indicxlit-rust\"}[1m]))",
+          "legendFormat": "{{lang}} {{status}} rows/s"
+        },
+        {
+          "refId": "B",
+          "expr": "indicxlit_config_rescore_dictionaries{job=\"indicxlit-rust\"}",
+          "legendFormat": "loaded dictionaries"
+        },
+        {
+          "refId": "C",
+          "expr": "indicxlit_config_rescore_alpha{job=\"indicxlit-rust\"}",
+          "legendFormat": "alpha"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Rescore CPU Latency",
+      "gridPos": {"x": 0, "y": 35, "w": 24, "h": 8},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "indicxlit_rescore_parse_duration_seconds{job=\"indicxlit-rust\",quantile=\"0.95\"}",
+          "legendFormat": "{{lang}} {{status}} parse p95"
+        },
+        {
+          "refId": "B",
+          "expr": "indicxlit_rescore_rerank_duration_seconds{job=\"indicxlit-rust\",quantile=\"0.95\"}",
+          "legendFormat": "{{lang}} {{status}} rerank p95"
+        },
+        {
+          "refId": "C",
+          "expr": "indicxlit_rescore_encode_duration_seconds{job=\"indicxlit-rust\",quantile=\"0.95\"}",
+          "legendFormat": "{{lang}} {{status}} encode p95"
+        },
+        {
+          "refId": "D",
+          "expr": "indicxlit_rescore_total_duration_seconds{job=\"indicxlit-rust\",quantile=\"0.95\"}",
+          "legendFormat": "{{lang}} {{status}} total p95"
+        },
+        {
+          "refId": "E",
+          "expr": "sum by(lang, status) (rate(indicxlit_rescore_total_duration_seconds_sum{job=\"indicxlit-rust\"}[5m])) / sum by(lang, status) (rate(indicxlit_rescore_total_duration_seconds_count{job=\"indicxlit-rust\"}[5m]))",
+          "legendFormat": "{{lang}} {{status}} total avg"
         }
       ]
     }

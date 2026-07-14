@@ -154,15 +154,25 @@ def extract_outputs(response: dict[str, Any]) -> tuple[list[str], list[list[str]
     return [str(item) for item in text_output], candidates
 
 
-def request_payload(words: list[str], lang: str, beam_width: int, topk: int, max_tokens: int) -> dict[str, Any]:
+def request_payload(
+    words: list[str],
+    lang: str,
+    beam_width: int,
+    topk: int,
+    max_tokens: int,
+    rescore: bool | None,
+) -> dict[str, Any]:
+    inputs = [
+        {"name": "text_input", "data": ["\n".join(words)]},
+        {"name": "target_lang", "data": [lang]},
+        {"name": "beam_width", "data": [beam_width]},
+        {"name": "topk", "data": [topk]},
+        {"name": "max_tokens", "data": [max_tokens]},
+    ]
+    if rescore is not None:
+        inputs.append({"name": "rescore", "data": [rescore]})
     return {
-        "inputs": [
-            {"name": "text_input", "data": ["\n".join(words)]},
-            {"name": "target_lang", "data": [lang]},
-            {"name": "beam_width", "data": [beam_width]},
-            {"name": "topk", "data": [topk]},
-            {"name": "max_tokens", "data": [max_tokens]},
-        ]
+        "inputs": inputs
     }
 
 
@@ -173,11 +183,25 @@ def main() -> int:
     parser.add_argument("--split", default="test", choices=["train", "dev", "test"])
     parser.add_argument("--data-root", type=Path, default=DEFAULT_DATA_ROOT)
     parser.add_argument("--dakshina-tsv", type=Path)
-    parser.add_argument("--download-dakshina", action="store_true")
+    parser.add_argument(
+        "--download-dakshina",
+        dest="download_dakshina",
+        action="store_true",
+        default=True,
+        help="Download/extract Dakshina if the selected TSV is missing. This is the default.",
+    )
+    parser.add_argument(
+        "--no-download-dakshina",
+        dest="download_dakshina",
+        action="store_false",
+        help="Fail instead of downloading Dakshina when the selected TSV is missing.",
+    )
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--beam-width", type=int, default=5)
     parser.add_argument("--topk", type=int, default=5)
     parser.add_argument("--max-tokens", type=int, default=32)
+    parser.add_argument("--rescore", dest="rescore", action="store_true", default=None)
+    parser.add_argument("--no-rescore", dest="rescore", action="store_false")
     parser.add_argument("--timeout", type=float, default=120.0)
     parser.add_argument("--limit", type=int, help="Limit rows for a quick smoke evaluation.")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
@@ -211,7 +235,7 @@ def main() -> int:
         request_started = time.perf_counter()
         response = post_json(
             args.url,
-            request_payload(words, args.lang, args.beam_width, args.topk, args.max_tokens),
+            request_payload(words, args.lang, args.beam_width, args.topk, args.max_tokens, args.rescore),
             args.timeout,
         )
         request_latencies.append(time.perf_counter() - request_started)
@@ -255,6 +279,7 @@ def main() -> int:
         "topk": args.topk,
         "batch_size": args.batch_size,
         "max_tokens": args.max_tokens,
+        "rescore": args.rescore,
         "filter_stats": filter_stats,
         "evaluated_count": total,
         "top1_correct": correct_top1,

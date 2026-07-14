@@ -46,6 +46,8 @@ ENV INDICXLIT_STATIC_SCHEDULER=1
 ENV INDICXLIT_MAX_BATCH_SIZE=256
 ENV INDICXLIT_BATCH_DELAY_US=2000
 ENV INDICXLIT_WORKERS=1
+ENV INDICXLIT_RESCORE=1
+ENV INDICXLIT_RESCORE_ALPHA=0.9
 
 COPY --from=build /build/rust/target/release/indicxlit-rust-executor-server /opt/indicxlit/bin/indicxlit-rust-executor-server
 COPY --from=build /build/rust/native/libindicxlit_trtllm_bridge.so /opt/indicxlit/lib/libindicxlit_trtllm_bridge.so
