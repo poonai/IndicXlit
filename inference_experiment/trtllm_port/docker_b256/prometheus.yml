@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 5s
+scrape_configs:
+  - job_name: indicxlit-rust
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["inference-1:8000", "inference-2:8000"]
+  - job_name: dcgm
+    static_configs:
+      - targets: ["dcgm-exporter:9400"]

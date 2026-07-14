@@ -1,0 +1,26 @@
+{
+  "created_at": "2026-07-09T09:16:41.330419+00:00",
+  "backend": "trtllm",
+  "dataset": "dakshina",
+  "dakshina_tsv": "/IndicXlit/inference_experiment/trtllm_port/artifacts/dakshina_data/dakshina_dataset_v1.0/hi/lexicons/hi.translit.sampled.test.tsv",
+  "engine_dir": "/IndicXlit/inference_experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4",
+  "lang": "hi",
+  "beam": 4,
+  "topk": 4,
+  "batch_size": 1,
+  "max_new_tokens": 32,
+  "filter_stats": {
+    "raw_rows": 4502,
+    "first_two_columns": 4502,
+    "roman_ascii_rows": 4502,
+    "native_script_rows": 4502,
+    "deduped_lower_rows": 4502
+  },
+  "evaluated_count": 4502,
+  "top1_correct": 2606,
+  "topk_correct": 3006,
+  "top1_accuracy": 0.5788538427365615,
+  "topk_accuracy": 0.6677032430031097,
+  "elapsed_seconds": 71.99478691024706,
+  "items_per_second": 62.53230536833811
+}

@@ -1,0 +1,131 @@
+name: indicxlit-b256
+
+services:
+  mps:
+    image: "${INDICXLIT_RUST_EXECUTOR_IMAGE:-indicxlit-trtllm:rust-executor}"
+    restart: unless-stopped
+    gpus: all
+    entrypoint: ["bash", "/opt/indicxlit/mps-entrypoint.sh"]
+    environment:
+      CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
+      CUDA_MPS_PIPE_DIRECTORY: /tmp/nvidia-mps
+      CUDA_MPS_LOG_DIRECTORY: /tmp/nvidia-log
+      CUDA_MPS_STATIC_PARTITION_COUNT: "2"
+      CUDA_MPS_STATIC_PARTITION_CHUNKS: "${CUDA_MPS_STATIC_PARTITION_CHUNKS:-9}"
+    volumes:
+      - ./mps-entrypoint.sh:/opt/indicxlit/mps-entrypoint.sh:ro
+      - mps-pipe:/tmp/nvidia-mps
+      - mps-log:/tmp/nvidia-log
+
+  inference-1:
+    image: "${INDICXLIT_RUST_EXECUTOR_IMAGE:-indicxlit-trtllm:rust-executor}"
+    restart: unless-stopped
+    gpus: all
+    cpuset: "0"
+    entrypoint: ["bash", "/opt/indicxlit/static-mps-client-entrypoint.sh"]
+    environment:
+      CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
+      CUDA_MPS_PIPE_DIRECTORY: /tmp/nvidia-mps
+      CUDA_MPS_LOG_DIRECTORY: /tmp/nvidia-log
+      CUDA_MPS_PARTITION_INDEX: "1"
+      INDICXLIT_WORKERS: "1"
+      INDICXLIT_MAX_BATCH_SIZE: "${INDICXLIT_MAX_BATCH_SIZE:-256}"
+      INDICXLIT_BATCH_DELAY_US: "${INDICXLIT_BATCH_DELAY_US:-5000}"
+      INDICXLIT_BEAM_WIDTH: "${INDICXLIT_BEAM_WIDTH:-5}"
+      INDICXLIT_TOPK: "${INDICXLIT_TOPK:-5}"
+      RUST_LOG: "${RUST_LOG:-info}"
+    volumes:
+      - ../artifacts/trtllm_engines_en_hi_beam5_runtime_fp16_b256_continuous_kv_fmha_static_mps_36sm_runtime_patchedbuild_36sm:/models/engines/b256_cont:ro
+      - ./static-mps-client-env.sh:/opt/indicxlit/static-mps-client-env.sh:ro
+      - ./static-mps-client-entrypoint.sh:/opt/indicxlit/static-mps-client-entrypoint.sh:ro
+      - mps-pipe:/tmp/nvidia-mps
+      - mps-log:/tmp/nvidia-log
+    depends_on:
+      mps:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v2/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+
+  inference-2:
+    image: "${INDICXLIT_RUST_EXECUTOR_IMAGE:-indicxlit-trtllm:rust-executor}"
+    restart: unless-stopped
+    gpus: all
+    cpuset: "1"
+    entrypoint: ["bash", "/opt/indicxlit/static-mps-client-entrypoint.sh"]
+    environment:
+      CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-0}"
+      CUDA_MPS_PIPE_DIRECTORY: /tmp/nvidia-mps
+      CUDA_MPS_LOG_DIRECTORY: /tmp/nvidia-log
+      CUDA_MPS_PARTITION_INDEX: "2"
+      INDICXLIT_WORKERS: "1"
+      INDICXLIT_MAX_BATCH_SIZE: "${INDICXLIT_MAX_BATCH_SIZE:-256}"
+      INDICXLIT_BATCH_DELAY_US: "${INDICXLIT_BATCH_DELAY_US:-5000}"
+      INDICXLIT_BEAM_WIDTH: "${INDICXLIT_BEAM_WIDTH:-5}"
+      INDICXLIT_TOPK: "${INDICXLIT_TOPK:-5}"
+      RUST_LOG: "${RUST_LOG:-info}"
+    volumes:
+      - ../artifacts/trtllm_engines_en_hi_beam5_runtime_fp16_b256_continuous_kv_fmha_static_mps_36sm_runtime_patchedbuild_36sm:/models/engines/b256_cont:ro
+      - ./static-mps-client-env.sh:/opt/indicxlit/static-mps-client-env.sh:ro
+      - ./static-mps-client-entrypoint.sh:/opt/indicxlit/static-mps-client-entrypoint.sh:ro
+      - mps-pipe:/tmp/nvidia-mps
+      - mps-log:/tmp/nvidia-log
+    depends_on:
+      mps:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v2/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports: ["8000:8000"]
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      inference-1:
+        condition: service_healthy
+      inference-2:
+        condition: service_healthy
+
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.1.1-4.0.4-ubuntu22.04
+    restart: unless-stopped
+    gpus: all
+    cap_add: [SYS_ADMIN]
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    restart: unless-stopped
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    ports: ["9090:9090"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    restart: unless-stopped
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER:-admin}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:-admin}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  mps-pipe:
+  mps-log:

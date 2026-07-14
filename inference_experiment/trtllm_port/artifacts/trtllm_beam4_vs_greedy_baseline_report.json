@@ -1,0 +1,366 @@
+{
+  "created_at": "2026-07-09T09:14:25.744068+00:00",
+  "fairseq": "/IndicXlit/inference_experiment/trtllm_port/artifacts/fairseq_baseline/greedy_postprocess.json",
+  "trtllm": "inference_experiment/trtllm_port/artifacts/trtllm_beam4_words.json",
+  "field": "final_postprocessed_best",
+  "expected_count": 22,
+  "compared_count": 22,
+  "missing_count": 0,
+  "match_count": 6,
+  "mismatch_count": 16,
+  "exact_match_rate": 0.2727272727272727,
+  "passes_greedy_gate": false,
+  "missing_indices": [],
+  "mismatches": [
+    {
+      "index": 6,
+      "word": "computer",
+      "expected": "कम्प्यूटर",
+      "actual": "क्रेंडेट",
+      "expected_preprocessed": "__hi__ c o m p u t e r",
+      "actual_preprocessed": "__hi__ c o m p u t e r",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          17,
+          6,
+          8,
+          23,
+          57,
+          112,
+          23,
+          89
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 7,
+      "word": "school",
+      "expected": "स्कूल",
+      "actual": "सूला",
+      "expected_preprocessed": "__hi__ s c h o o l",
+      "actual_preprocessed": "__hi__ s c h o o l",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          19,
+          120,
+          31,
+          5
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 8,
+      "word": "mobile",
+      "expected": "मोबाइल",
+      "actual": "मैलेबाइल",
+      "expected_preprocessed": "__hi__ m o b i l e",
+      "actual_preprocessed": "__hi__ m o b i l e",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          24,
+          138,
+          31,
+          23,
+          74,
+          5,
+          198,
+          31
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 9,
+      "word": "india",
+      "expected": "इंडिया",
+      "actual": "इन्दिया",
+      "expected_preprocessed": "__hi__ i n d i a",
+      "actual_preprocessed": "__hi__ i n d i a",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          198,
+          14,
+          6,
+          50,
+          11,
+          28,
+          5
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 10,
+      "word": "ramayan",
+      "expected": "रामायण",
+      "actual": "रमानय",
+      "expected_preprocessed": "__hi__ r a m a y a n",
+      "actual_preprocessed": "__hi__ r a m a y a n",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          8,
+          24,
+          5,
+          14,
+          28
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 11,
+      "word": "pradesh",
+      "expected": "प्रदेश",
+      "actual": "पराश",
+      "expected_preprocessed": "__hi__ p r a d e s h",
+      "actual_preprocessed": "__hi__ p r a d e s h",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          34,
+          8,
+          5,
+          93
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 12,
+      "word": "language",
+      "expected": "लैंग्वेज",
+      "actual": "लेजेज",
+      "expected_preprocessed": "__hi__ l a n g u a g e",
+      "actual_preprocessed": "__hi__ l a n g u a g e",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          31,
+          23,
+          84,
+          23,
+          84
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 13,
+      "word": "server",
+      "expected": "सर्वर",
+      "actual": "सर्जरा",
+      "expected_preprocessed": "__hi__ s e r v e r",
+      "actual_preprocessed": "__hi__ s e r v e r",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          19,
+          8,
+          6,
+          84,
+          8,
+          5
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 14,
+      "word": "request",
+      "expected": "रिक्वेस्ट",
+      "actual": "रिसेजा",
+      "expected_preprocessed": "__hi__ r e q u e s t",
+      "actual_preprocessed": "__hi__ r e q u e s t",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          8,
+          11,
+          19,
+          23,
+          84,
+          5
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 15,
+      "word": "throughput",
+      "expected": "थ्रॉगपुट",
+      "actual": "थाइटेक",
+      "expected_preprocessed": "__hi__ t h r o u g h p u t",
+      "actual_preprocessed": "__hi__ t h r o u g h p u t",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          151,
+          5,
+          198,
+          89,
+          23,
+          17
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 16,
+      "word": "Ganga",
+      "expected": "गंगा",
+      "actual": "गंड__ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur____ur__",
+      "expected_preprocessed": "__hi__ g a n g a",
+      "actual_preprocessed": "__hi__ g a n g a",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          68,
+          57,
+          112,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805,
+          805
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 17,
+      "word": "Shivaji",
+      "expected": "शिवाजी",
+      "actual": "शवालक",
+      "expected_preprocessed": "__hi__ s h i v a j i",
+      "actual_preprocessed": "__hi__ s h i v a j i",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          93,
+          30,
+          5,
+          31,
+          17
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 18,
+      "word": "mahabharat",
+      "expected": "महाभारत",
+      "actual": "मानवाहामात",
+      "expected_preprocessed": "__hi__ m a h a b h a r a t",
+      "actual_preprocessed": "__hi__ m a h a b h a r a t",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          24,
+          5,
+          14,
+          30,
+          5,
+          72,
+          5,
+          24,
+          5,
+          18
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 19,
+      "word": "internationalization",
+      "expected": "इंटरनैशनलाइजेशन",
+      "actual": "इंनेटिका",
+      "expected_preprocessed": "__hi__ i n t e r n a t i o n a l i z a t i o n",
+      "actual_preprocessed": "__hi__ i n t e r n a t i o n a l i z a t i o n",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          198,
+          57,
+          14,
+          23,
+          89,
+          11,
+          17,
+          5
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 20,
+      "word": "zzzztest",
+      "expected": "ज़ज़टेस्ट",
+      "actual": "जिका",
+      "expected_preprocessed": "__hi__ z z z z t e s t",
+      "actual_preprocessed": "__hi__ z z z z t e s t",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          84,
+          11,
+          17,
+          5
+        ],
+        "first_mismatch": 0
+      }
+    },
+    {
+      "index": 21,
+      "word": "bharat",
+      "expected": "भारत",
+      "actual": "भाषावादा",
+      "expected_preprocessed": "__hi__ b h a r a t",
+      "actual_preprocessed": "__hi__ b h a r a t",
+      "token_diff": {
+        "expected": [],
+        "actual": [
+          113,
+          5,
+          127,
+          5,
+          30,
+          5,
+          50,
+          5
+        ],
+        "first_mismatch": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+services:
+  inference-1:
+    entrypoint: ["bash", "-lc"]
+    command:
+      - |
+        set -euo pipefail
+        export CUDA_MPS_PARTITION_INDEX=1
+        source /opt/indicxlit/static-mps-client-env.sh
+        exec nsys profile \
+          --force-overwrite=true \
+          --trace=cuda,nvtx,osrt,cudnn,cublas \
+          --sample=cpu \
+          --cpuctxsw=process-tree \
+          --duration="${NSYS_DURATION:-45}" \
+          --output="/nsight/indicxlit_static_mps_inference1_${NSYS_TAG:-profile}" \
+          /opt/indicxlit/bin/indicxlit-rust-executor-server
+    volumes:
+      - ./static-mps-client-env.sh:/opt/indicxlit/static-mps-client-env.sh:ro
+      - ../artifacts/nsight:/nsight
+
+  inference-2:
+    entrypoint: ["bash", "-lc"]
+    command:
+      - |
+        set -euo pipefail
+        export CUDA_MPS_PARTITION_INDEX=2
+        source /opt/indicxlit/static-mps-client-env.sh
+        exec nsys profile \
+          --force-overwrite=true \
+          --trace=cuda,nvtx,osrt,cudnn,cublas \
+          --sample=cpu \
+          --cpuctxsw=process-tree \
+          --duration="${NSYS_DURATION:-45}" \
+          --output="/nsight/indicxlit_static_mps_inference2_${NSYS_TAG:-profile}" \
+          /opt/indicxlit/bin/indicxlit-rust-executor-server
+    volumes:
+      - ./static-mps-client-env.sh:/opt/indicxlit/static-mps-client-env.sh:ro
+      - ../artifacts/nsight:/nsight

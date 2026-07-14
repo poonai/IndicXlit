@@ -1,0 +1,43 @@
+{
+  "created_at": "2026-07-09T08:04:31.091526+00:00",
+  "backend": "trtllm",
+  "engine_dir": "/IndicXlit/inference_experiment/trtllm_port/artifacts/trtllm_engines_en_hi",
+  "lang": "hi",
+  "beam": 1,
+  "topk": 1,
+  "postprocess": true,
+  "batch_size": 1,
+  "max_new_tokens": 32,
+  "elapsed_seconds": 0.3323820810765028,
+  "items_per_second": 3.0085857720164966,
+  "output_shape": [
+    1,
+    1,
+    33
+  ],
+  "rows": [
+    {
+      "index": 0,
+      "word": "bharat",
+      "preprocessed": "__hi__ b h a r a t",
+      "source_token_ids": [
+        38,
+        22,
+        7,
+        4,
+        9,
+        4,
+        8,
+        2
+      ],
+      "generated_token_ids": [
+        113,
+        5,
+        8,
+        18
+      ],
+      "raw_decoded_best": "भ ा र त",
+      "final_postprocessed_best": "भारत"
+    }
+  ]
+}

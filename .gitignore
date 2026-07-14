@@ -136,20 +136,20 @@ dmypy.json
 *.zip
 
 # TensorRT-LLM experiment build outputs and downloaded datasets.
-inference experiment/trtllm_port/artifacts/dakshina/
-inference experiment/trtllm_port/artifacts/dakshina_data/
-inference experiment/trtllm_port/artifacts/trtllm_bundle_en_hi/
-inference experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/
-inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi/
-inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4/
-inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5/
-inference experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/
-inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*.json
-inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam5_eval*.json
-inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_greedy*_eval.json
-inference experiment/trtllm_port/artifacts/dakshina_hi_fairseq_beam*_eval*.json
-inference experiment/trtllm_port/artifacts/trtllm_benchmark_batch_decode*.csv
-!inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*_summary.json
+inference_experiment/trtllm_port/artifacts/dakshina/
+inference_experiment/trtllm_port/artifacts/dakshina_data/
+inference_experiment/trtllm_port/artifacts/trtllm_bundle_en_hi/
+inference_experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/
+inference_experiment/trtllm_port/artifacts/trtllm_engines_en_hi/
+inference_experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam4/
+inference_experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5/
+inference_experiment/trtllm_port/artifacts/trtllm_engines_en_hi_beam5_triton/
+inference_experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*.json
+inference_experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam5_eval*.json
+inference_experiment/trtllm_port/artifacts/dakshina_hi_trtllm_greedy*_eval.json
+inference_experiment/trtllm_port/artifacts/dakshina_hi_fairseq_beam*_eval*.json
+inference_experiment/trtllm_port/artifacts/trtllm_benchmark_batch_decode*.csv
+!inference_experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam4_eval*_summary.json
 model.cache
 
 # Local downloads and Triton Python helper venv.
@@ -157,13 +157,31 @@ model.cache
 .venv-triton-py312/
 
 # TensorRT-LLM generated checkpoints, engines, logs, traces, and packaged contexts.
-inference experiment/trtllm_port/artifacts/build_metrics_*/
-inference experiment/trtllm_port/artifacts/cpp_executor_*/
-inference experiment/trtllm_port/artifacts/nsight_*/
-inference experiment/trtllm_port/artifacts/triton_benchmark_*/
-inference experiment/trtllm_port/artifacts/trtllm_checkpoint_*/
-inference experiment/trtllm_port/artifacts/trtllm_engines_*/
-inference experiment/trtllm_port/artifacts/indicxlit_trtllm_*_docker_context.tar.gz
-inference experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam5_fp16_*.json
-inference experiment/trtllm_port/docker_b256/context/
-inference experiment/trtllm_port/artifacts/trtllm_fp16_smoke.json
+inference_experiment/trtllm_port/artifacts/build_metrics_*/
+inference_experiment/trtllm_port/artifacts/cpp_executor_*/
+inference_experiment/trtllm_port/artifacts/nsight/
+inference_experiment/trtllm_port/artifacts/nsight_*/
+inference_experiment/trtllm_port/artifacts/tensorrt_sdk_*/
+inference_experiment/trtllm_port/artifacts/triton_benchmark_*/
+inference_experiment/trtllm_port/artifacts/trtllm_checkpoint_*/
+inference_experiment/trtllm_port/artifacts/trtllm_engines_*/
+inference_experiment/trtllm_port/artifacts/indicxlit_trtllm_*_docker_context.tar.gz
+inference_experiment/trtllm_port/artifacts/dakshina_hi_trtllm_beam5_fp16_*.json
+inference_experiment/trtllm_port/artifacts/continuous_kv*_smoke*.json
+inference_experiment/trtllm_port/artifacts/paged_kv*_smoke*.json
+inference_experiment/trtllm_port/artifacts/direct_cpp_*_eval.json
+inference_experiment/trtllm_port/artifacts/rust_executor_*_eval*.json
+inference_experiment/trtllm_port/artifacts/trtllm_beam_output.json
+inference_experiment/trtllm_port/artifacts/trtllm_fmha_continuous_kv_parity_report.json
+inference_experiment/trtllm_port/docker_b256/context/
+inference_experiment/trtllm_port/docker_b256/context_cont/
+inference_experiment/trtllm_port/docker_b256/context_runtime/
+inference_experiment/trtllm_port/docker_b256/cpp_executor/build*/
+inference_experiment/trtllm_port/docker_b256/rust_executor_server/cpp_build*/
+inference_experiment/trtllm_port/docker_b256/rust_executor_server/cuda_runtime/
+inference_experiment/trtllm_port/artifacts/trtllm_fp16_smoke.json
+
+rust_inference/trtllm_bundle/
+rust_inference/artifacts/
+rust_inference/checkpoints/
+rust_inference/engines/

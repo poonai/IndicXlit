@@ -1,0 +1,16 @@
+services:
+  mps:
+    entrypoint: ["bash", "-lc"]
+    command:
+      - |
+        set -euo pipefail
+        exec nsys profile \
+          --force-overwrite=true \
+          --trace=cuda,nvtx,osrt,cudnn,cublas \
+          --sample=cpu \
+          --cpuctxsw=process-tree \
+          --duration="${NSYS_DURATION:-50}" \
+          --output="/nsight/indicxlit_static_mps_server_${NSYS_TAG:-profile}" \
+          bash /opt/indicxlit/mps-entrypoint.sh
+    volumes:
+      - ../artifacts/nsight:/nsight

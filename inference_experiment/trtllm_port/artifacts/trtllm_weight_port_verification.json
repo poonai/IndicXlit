@@ -1,0 +1,68 @@
+{
+  "created_at": "2026-07-09T08:04:18.880034+00:00",
+  "fairseq_checkpoint": "/IndicXlit/app/ai4bharat/transliteration/transformer/models/en2indic/v1.0/transformer/indicxlit.pt",
+  "trtllm_checkpoint_dir": "/IndicXlit/inference_experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi",
+  "encoder": {
+    "actual_path": "/IndicXlit/inference_experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/encoder/rank0.safetensors",
+    "expected_count": 78,
+    "actual_count": 78,
+    "missing": [],
+    "extra": [],
+    "shape_mismatches": {},
+    "value_mismatch_count": 0,
+    "value_mismatches": {},
+    "max_abs_diff": 0.0,
+    "exact": true
+  },
+  "decoder": {
+    "actual_path": "/IndicXlit/inference_experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/decoder/rank0.safetensors",
+    "expected_count": 115,
+    "actual_count": 115,
+    "missing": [],
+    "extra": [],
+    "shape_mismatches": {},
+    "value_mismatch_count": 0,
+    "value_mismatches": {},
+    "max_abs_diff": 0.0,
+    "exact": true
+  },
+  "fairseq_semantics": {
+    "encoder_learned_pos": null,
+    "decoder_learned_pos": null,
+    "no_token_positional_embeddings": null,
+    "no_scale_embedding": null,
+    "fairseq_embedding_scale": 16.0,
+    "layernorm_embedding": true,
+    "encoder_normalize_before": true,
+    "decoder_normalize_before": true,
+    "activation_fn": "gelu",
+    "notes": [
+      "Fairseq learned positional embedding weights are absent when encoder_learned_pos/decoder_learned_pos are false.",
+      "If no_token_positional_embeddings is false, Fairseq still applies sinusoidal positional embeddings as model math, not checkpoint weights.",
+      "If no_scale_embedding is false, Fairseq scales token embeddings by sqrt(embed_dim)."
+    ]
+  },
+  "trtllm_semantics": {
+    "encoder": {
+      "config_path": "/IndicXlit/inference_experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/encoder/config.json",
+      "architecture": "EncoderModel",
+      "has_position_embedding": true,
+      "has_embedding_scale": true,
+      "has_embedding_layernorm": true,
+      "has_model_final_layernorm": true,
+      "layernorm_position": 0,
+      "hidden_act": "gelu"
+    },
+    "decoder": {
+      "config_path": "/IndicXlit/inference_experiment/trtllm_port/artifacts/trtllm_checkpoint_en_hi/decoder/config.json",
+      "architecture": "DecoderModel",
+      "has_position_embedding": true,
+      "has_embedding_scale": true,
+      "has_embedding_layernorm": true,
+      "has_model_final_layernorm": true,
+      "layernorm_position": 0,
+      "hidden_act": "gelu"
+    }
+  },
+  "exact_tensor_port": true
+}

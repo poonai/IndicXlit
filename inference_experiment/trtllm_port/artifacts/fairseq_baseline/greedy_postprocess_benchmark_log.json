@@ -1,0 +1,30 @@
+{
+  "cmd": [
+    "/workspace/IndicXlit/.venv/bin/python",
+    "/workspace/IndicXlit/inference_experiment/benchmark_batch_decode.py",
+    "--direction",
+    "en2indic",
+    "--lang",
+    "hi",
+    "--beam-width",
+    "1",
+    "--topk",
+    "1",
+    "--batch-sizes",
+    "1,32,128",
+    "--target-items",
+    "128",
+    "--min-repeats",
+    "2",
+    "--warmup",
+    "2",
+    "--words-file",
+    "/workspace/IndicXlit/inference_experiment/trtllm_port/words_en_hi.txt",
+    "--csv",
+    "/workspace/IndicXlit/inference_experiment/trtllm_port/artifacts/fairseq_baseline/greedy_postprocess_benchmark.csv"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 9.902755835966673,
+  "stdout": "Loading 1 model instance(s)...\nInitializing Multilingual model for transliteration\nLoaded direction=en2indic lang=hi in 1.39s rss_mb=774.9 threads=22 cuda=1 torch_gpu_mb=61.9 smi_gpu_mb=569.0 compiled=none\nbatch=   1 items/s=   33.92 wall_ms/item=  29.48 wall_s=   3.77 pre_ms/item=  0.00 inf_ms/item= 29.45 post_ms/item=  0.02 cpu_ms/item=  29.45 cores= 1.00 rss_mb= 1647.2 torch_gpu_mb=   95.9 smi_gpu_mb=  657.0 gpu_util%=  9.0\nbatch=  32 items/s=  254.70 wall_ms/item=   3.93 wall_s=   0.50 pre_ms/item=  0.00 inf_ms/item=  3.91 post_ms/item=  0.02 cpu_ms/item=   3.91 cores= 0.99 rss_mb= 1707.4 torch_gpu_mb=   95.9 smi_gpu_mb=  671.0 gpu_util%= 12.0\nbatch= 128 items/s=  336.02 wall_ms/item=   2.98 wall_s=   0.76 pre_ms/item=  0.00 inf_ms/item=  2.93 post_ms/item=  0.04 cpu_ms/item=   2.97 cores= 1.00 rss_mb= 1708.3 torch_gpu_mb=   95.9 smi_gpu_mb=  675.0 gpu_util%=  7.0\nWrote CSV: /workspace/IndicXlit/inference_experiment/trtllm_port/artifacts/fairseq_baseline/greedy_postprocess_benchmark.csv\n",
+  "stderr": ""
+}
