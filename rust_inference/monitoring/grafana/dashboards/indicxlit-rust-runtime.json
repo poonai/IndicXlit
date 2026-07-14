@@ -1,0 +1,222 @@
+{
+  "uid": "indicxlit-rust-runtime",
+  "title": "IndicXlit Rust Runtime",
+  "schemaVersion": 39,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "tags": ["indicxlit", "rust", "inference"],
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Request Rate",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 5},
+      "fieldConfig": {"defaults": {"unit": "reqps"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(indicxlit_http_requests_total{job=\"indicxlit-rust\",status=\"ok\"}[1m]))",
+          "legendFormat": "ok requests/s"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Word Throughput",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 5},
+      "fieldConfig": {"defaults": {"unit": "wps"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(indicxlit_http_request_words_total{job=\"indicxlit-rust\",status=\"ok\"}[1m]))",
+          "legendFormat": "words/s"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Average HTTP Latency",
+      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 5},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(indicxlit_http_request_duration_seconds_sum{job=\"indicxlit-rust\",status=\"ok\"}[5m])) / sum(rate(indicxlit_http_request_duration_seconds_count{job=\"indicxlit-rust\",status=\"ok\"}[5m]))",
+          "legendFormat": "avg"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Average Batch Size",
+      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 5},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(indicxlit_batch_words_total{job=\"indicxlit-rust\",status=\"ok\"}[5m])) / sum(rate(indicxlit_batches_total{job=\"indicxlit-rust\",status=\"ok\"}[5m]))",
+          "legendFormat": "words/batch"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Request Rate By Worker",
+      "gridPos": {"x": 0, "y": 5, "w": 12, "h": 8},
+      "fieldConfig": {"defaults": {"unit": "reqps"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(worker) (rate(indicxlit_http_requests_total{job=\"indicxlit-rust\",status=\"ok\"}[1m]))",
+          "legendFormat": "{{worker}} ok"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by(worker) (rate(indicxlit_http_requests_total{job=\"indicxlit-rust\",status=\"error\"}[1m]))",
+          "legendFormat": "{{worker}} error"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Word Throughput By Worker",
+      "gridPos": {"x": 12, "y": 5, "w": 12, "h": 8},
+      "fieldConfig": {"defaults": {"unit": "wps"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(worker) (rate(indicxlit_http_request_words_total{job=\"indicxlit-rust\",status=\"ok\"}[1m]))",
+          "legendFormat": "{{worker}} words/s"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "HTTP Latency",
+      "gridPos": {"x": 0, "y": 13, "w": 12, "h": 8},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "indicxlit_http_request_duration_seconds{job=\"indicxlit-rust\",status=\"ok\",quantile=\"0.5\"}",
+          "legendFormat": "{{worker}} p50"
+        },
+        {
+          "refId": "B",
+          "expr": "indicxlit_http_request_duration_seconds{job=\"indicxlit-rust\",status=\"ok\",quantile=\"0.95\"}",
+          "legendFormat": "{{worker}} p95"
+        },
+        {
+          "refId": "C",
+          "expr": "sum by(worker) (rate(indicxlit_http_request_duration_seconds_sum{job=\"indicxlit-rust\",status=\"ok\"}[5m])) / sum by(worker) (rate(indicxlit_http_request_duration_seconds_count{job=\"indicxlit-rust\",status=\"ok\"}[5m]))",
+          "legendFormat": "{{worker}} avg"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Queue Wait",
+      "gridPos": {"x": 12, "y": 13, "w": 12, "h": 8},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "indicxlit_queue_wait_duration_seconds{job=\"indicxlit-rust\",quantile=\"0.5\"}",
+          "legendFormat": "{{worker}} p50"
+        },
+        {
+          "refId": "B",
+          "expr": "indicxlit_queue_wait_duration_seconds{job=\"indicxlit-rust\",quantile=\"0.95\"}",
+          "legendFormat": "{{worker}} p95"
+        },
+        {
+          "refId": "C",
+          "expr": "sum by(worker) (rate(indicxlit_queue_wait_duration_seconds_sum{job=\"indicxlit-rust\"}[5m])) / sum by(worker) (rate(indicxlit_queue_wait_duration_seconds_count{job=\"indicxlit-rust\"}[5m]))",
+          "legendFormat": "{{worker}} avg"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Engine Batch Latency",
+      "gridPos": {"x": 0, "y": 21, "w": 12, "h": 8},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "indicxlit_batch_inference_duration_seconds{job=\"indicxlit-rust\",status=\"ok\",quantile=\"0.5\"}",
+          "legendFormat": "{{worker}} {{mode}} p50"
+        },
+        {
+          "refId": "B",
+          "expr": "indicxlit_batch_inference_duration_seconds{job=\"indicxlit-rust\",status=\"ok\",quantile=\"0.95\"}",
+          "legendFormat": "{{worker}} {{mode}} p95"
+        },
+        {
+          "refId": "C",
+          "expr": "sum by(worker, mode) (rate(indicxlit_batch_inference_duration_seconds_sum{job=\"indicxlit-rust\",status=\"ok\"}[5m])) / sum by(worker, mode) (rate(indicxlit_batch_inference_duration_seconds_count{job=\"indicxlit-rust\",status=\"ok\"}[5m]))",
+          "legendFormat": "{{worker}} {{mode}} avg"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Batch Shape",
+      "gridPos": {"x": 12, "y": 21, "w": 12, "h": 8},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "indicxlit_batch_words{job=\"indicxlit-rust\",status=\"ok\",quantile=\"0.5\"}",
+          "legendFormat": "{{worker}} {{mode}} words p50"
+        },
+        {
+          "refId": "B",
+          "expr": "indicxlit_batch_words{job=\"indicxlit-rust\",status=\"ok\",quantile=\"0.95\"}",
+          "legendFormat": "{{worker}} {{mode}} words p95"
+        },
+        {
+          "refId": "C",
+          "expr": "indicxlit_batch_requests{job=\"indicxlit-rust\",status=\"ok\",quantile=\"0.5\"}",
+          "legendFormat": "{{worker}} {{mode}} requests p50"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Configured Runtime",
+      "gridPos": {"x": 0, "y": 29, "w": 24, "h": 6},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "indicxlit_config_workers{job=\"indicxlit-rust\"}",
+          "legendFormat": "workers"
+        },
+        {
+          "refId": "B",
+          "expr": "indicxlit_config_max_batch_size{job=\"indicxlit-rust\"}",
+          "legendFormat": "max batch"
+        },
+        {
+          "refId": "C",
+          "expr": "indicxlit_config_batch_delay_microseconds{job=\"indicxlit-rust\"}",
+          "legendFormat": "batch delay us"
+        }
+      ]
+    }
+  ]
+}

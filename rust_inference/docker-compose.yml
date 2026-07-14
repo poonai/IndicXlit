@@ -1,0 +1,69 @@
+services:
+  inference:
+    image: ${INDICXLIT_IMAGE:-indicxlit-rust-inference:continuous-decoder-kv}
+    container_name: indicxlit-rust-inference
+    restart: unless-stopped
+    ports:
+      - "${INDICXLIT_PORT:-8000}:8000"
+    environment:
+      INDICXLIT_HOST: 0.0.0.0
+      INDICXLIT_PORT: 8000
+      INDICXLIT_WORKERS: ${INDICXLIT_WORKERS:-1}
+      INDICXLIT_MAX_BATCH_SIZE: ${INDICXLIT_MAX_BATCH_SIZE:-256}
+      INDICXLIT_BATCH_DELAY_US: ${INDICXLIT_BATCH_DELAY_US:-2000}
+      INDICXLIT_STATIC_SCHEDULER: ${INDICXLIT_STATIC_SCHEDULER:-1}
+      INDICXLIT_LANG: ${INDICXLIT_LANG:-hi}
+      INDICXLIT_BEAM_WIDTH: ${INDICXLIT_BEAM_WIDTH:-5}
+      INDICXLIT_TOPK: ${INDICXLIT_TOPK:-5}
+      INDICXLIT_MAX_TOKENS: ${INDICXLIT_MAX_TOKENS:-32}
+      RUST_LOG: ${RUST_LOG:-info}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: ${NVIDIA_GPU_COUNT:-1}
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8000/v2/health/ready\", timeout=2).read()'"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+      start_period: 30s
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: indicxlit-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - inference
+
+  grafana:
+    image: grafana/grafana-oss:11.4.0
+    container_name: indicxlit-grafana
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus-data:
+  grafana-data:
