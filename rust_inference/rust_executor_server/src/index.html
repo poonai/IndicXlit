@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IndicXlit Demo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #171a1f;
+      --muted: #616b7a;
+      --line: #d7dce3;
+      --accent: #176c63;
+      --accent-strong: #0f4e49;
+      --danger: #a33a2b;
+      --chip: #eef2f6;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(1120px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .editor,
+    .controls,
+    .results {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .editor {
+      min-height: 420px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+    }
+
+    .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .bar strong {
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 260px;
+      resize: vertical;
+      border: 0;
+      outline: none;
+      padding: 18px;
+      font: 18px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--ink);
+    }
+
+    .hint {
+      padding: 12px 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .controls {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 0 10px;
+      font: inherit;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 42px;
+      gap: 12px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .toggle span {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    button {
+      height: 44px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--accent-strong);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
+    .samples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sample {
+      height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--chip);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .sample:hover {
+      background: #e3e9f0;
+    }
+
+    .results {
+      margin-top: 16px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      background: #fafbfc;
+    }
+
+    td:first-child {
+      width: 26%;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .primary-output {
+      font-size: 22px;
+      line-height: 1.35;
+    }
+
+    .candidates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .candidate {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 9px;
+      border-radius: 14px;
+      background: var(--chip);
+      font-size: 14px;
+    }
+
+    .error {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    @media (max-width: 860px) {
+      main {
+        width: min(100vw - 20px, 720px);
+        padding: 18px 0;
+      }
+
+      header,
+      .workspace {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .status {
+        justify-self: start;
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>IndicXlit Demo</h1>
+      <div class="status" id="status">Ready</div>
+    </header>
+
+    <section class="workspace">
+      <div>
+        <section class="editor" aria-label="Transliteration input">
+          <div class="bar">
+            <strong>English input</strong>
+            <span id="wordCount" class="status">0 words</span>
+          </div>
+          <textarea id="inputText" spellcheck="false">namaste
+bharat
+dilli</textarea>
+          <div class="hint">Enter one word per line. The request is sent to the local Rust TensorRT runtime.</div>
+        </section>
+
+        <section class="results" aria-label="Transliteration results">
+          <table>
+            <thead>
+              <tr>
+                <th>Input</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <tr>
+                <td colspan="2">Run transliteration to see results.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <aside class="controls" aria-label="Controls">
+        <div class="field">
+          <label for="targetLang">Target language</label>
+          <select id="targetLang">
+            <option value="hi">Hindi</option>
+            <option value="ta">Tamil</option>
+            <option value="ml">Malayalam</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="beamWidth">Beam</label>
+            <input id="beamWidth" type="number" min="1" max="5" value="5">
+          </div>
+          <div class="field">
+            <label for="topk">Top K</label>
+            <input id="topk" type="number" min="1" max="5" value="5">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="maxTokens">Max tokens</label>
+          <input id="maxTokens" type="number" min="1" max="64" value="32">
+        </div>
+
+        <label class="toggle">
+          <span>Rescore</span>
+          <input id="rescore" type="checkbox" checked>
+        </label>
+
+        <button id="runButton" type="button">Transliterate</button>
+
+        <div class="field">
+          <label>Samples</label>
+          <div class="samples">
+            <button class="sample" type="button" data-sample="namaste&#10;bharat&#10;dilli">Hindi</button>
+            <button class="sample" type="button" data-sample="vanakkam&#10;chennai&#10;tamil">Tamil</button>
+            <button class="sample" type="button" data-sample="namaskaram&#10;keralam&#10;kochi">Malayalam</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const inputText = document.getElementById("inputText");
+    const targetLang = document.getElementById("targetLang");
+    const beamWidth = document.getElementById("beamWidth");
+    const topk = document.getElementById("topk");
+    const maxTokens = document.getElementById("maxTokens");
+    const rescore = document.getElementById("rescore");
+    const runButton = document.getElementById("runButton");
+    const resultsBody = document.getElementById("resultsBody");
+    const statusEl = document.getElementById("status");
+    const wordCountEl = document.getElementById("wordCount");
+
+    function wordsFromInput() {
+      return inputText.value
+        .split(/\r?\n/)
+        .map((word) => word.trim())
+        .filter(Boolean);
+    }
+
+    function setStatus(text, isError = false) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle("error", isError);
+    }
+
+    function updateWordCount() {
+      const count = wordsFromInput().length;
+      wordCountEl.textContent = `${count} ${count === 1 ? "word" : "words"}`;
+    }
+
+    function tritonInput(name, data) {
+      return { name, data: Array.isArray(data) ? data : [data] };
+    }
+
+    function parseOutputs(payload) {
+      const outputs = Object.fromEntries((payload.outputs || []).map((item) => [item.name, item]));
+      const text = outputs.text_output?.data || [];
+      const rawCandidates = outputs.candidates_json?.data || [];
+      const candidates = rawCandidates.map((value) => {
+        try {
+          const parsed = JSON.parse(value);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      });
+      return { text, candidates };
+    }
+
+    function renderResults(words, outputs, candidates) {
+      resultsBody.textContent = "";
+      words.forEach((word, index) => {
+        const row = document.createElement("tr");
+        const inputCell = document.createElement("td");
+        const outputCell = document.createElement("td");
+        const primary = document.createElement("div");
+        const candidateList = document.createElement("div");
+
+        inputCell.textContent = word;
+        primary.className = "primary-output";
+        primary.textContent = outputs[index] || "";
+        candidateList.className = "candidates";
+
+        (candidates[index] || []).forEach((candidate) => {
+          const chip = document.createElement("span");
+          chip.className = "candidate";
+          chip.textContent = candidate;
+          candidateList.appendChild(chip);
+        });
+
+        outputCell.appendChild(primary);
+        outputCell.appendChild(candidateList);
+        row.appendChild(inputCell);
+        row.appendChild(outputCell);
+        resultsBody.appendChild(row);
+      });
+    }
+
+    async function transliterate() {
+      const words = wordsFromInput();
+      if (words.length === 0) {
+        setStatus("Enter at least one word", true);
+        return;
+      }
+
+      const beam = Math.max(1, Number.parseInt(beamWidth.value, 10) || 5);
+      const k = Math.min(beam, Math.max(1, Number.parseInt(topk.value, 10) || 5));
+      topk.value = String(k);
+
+      const payload = {
+        inputs: [
+          tritonInput("text_input", words.join("\n")),
+          tritonInput("target_lang", targetLang.value),
+          tritonInput("beam_width", beam),
+          tritonInput("topk", k),
+          tritonInput("max_tokens", Math.max(1, Number.parseInt(maxTokens.value, 10) || 32)),
+          tritonInput("rescore", rescore.checked),
+        ],
+      };
+
+      runButton.disabled = true;
+      setStatus("Running...");
+      const started = performance.now();
+      try {
+        const response = await fetch("/v2/models/indicxlit/infer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const elapsed = performance.now() - started;
+        if (!response.ok) {
+          const message = await response.text();
+          throw new Error(message || `HTTP ${response.status}`);
+        }
+        const body = await response.json();
+        const { text, candidates } = parseOutputs(body);
+        renderResults(words, text, candidates);
+        setStatus(`${words.length} words in ${elapsed.toFixed(1)} ms`);
+      } catch (error) {
+        resultsBody.innerHTML = `<tr><td colspan="2" class="error"></td></tr>`;
+        resultsBody.querySelector("td").textContent = error.message;
+        setStatus("Request failed", true);
+      } finally {
+        runButton.disabled = false;
+      }
+    }
+
+    document.querySelectorAll(".sample").forEach((button) => {
+      button.addEventListener("click", () => {
+        inputText.value = button.dataset.sample || "";
+        const label = button.textContent.trim().toLowerCase();
+        if (label === "tamil") targetLang.value = "ta";
+        if (label === "malayalam") targetLang.value = "ml";
+        if (label === "hindi") targetLang.value = "hi";
+        updateWordCount();
+      });
+    });
+
+    inputText.addEventListener("input", updateWordCount);
+    runButton.addEventListener("click", transliterate);
+    updateWordCount();
+  </script>
+</body>
+</html>

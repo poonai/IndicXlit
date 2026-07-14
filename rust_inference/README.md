@@ -41,6 +41,19 @@ Default image tag:
 indicxlit-rust-inference:continuous-decoder-kv
 ```
 
+The runtime image build also downloads and packages the official
+`word_prob_dicts.zip` rescoring dictionaries. The server loads them once at
+startup and rescoring is enabled by default. The default runtime image packages
+only the Hindi dictionary to keep startup memory bounded. To package Tamil and
+Malayalam rescoring dictionaries too:
+
+```bash
+RESCORE_LANGS=hi,ta,ml
+```
+
+Override `RESCORE_LANGS` with a comma-separated list to reduce image size or add
+more languages.
+
 ## Run Stack
 
 After the image is built, bring up inference, Prometheus, and Grafana:
@@ -52,12 +65,23 @@ sudo docker compose up
 
 Exposed services:
 
+- browser demo: `http://localhost:8000/`
 - inference API: `http://localhost:8000/v2/models/indicxlit/infer`
 - Prometheus: `http://localhost:9090`
 - Grafana: `http://localhost:3000`
 
 Grafana credentials default to `admin` / `admin`. The dashboard is provisioned
 under the `IndicXlit` folder.
+
+Rescoring controls:
+
+```bash
+INDICXLIT_RESCORE=1
+INDICXLIT_RESCORE_ALPHA=0.9
+```
+
+Per request, pass a Triton-style input named `rescore` with `true` or `false` to
+override the default.
 
 ## Dakshina Evaluation
 
@@ -66,13 +90,29 @@ runtime:
 
 ```bash
 cd rust_inference
-python3 scripts/evaluate_dakshina.py --download-dakshina
+python3 scripts/evaluate_dakshina.py
 ```
 
 Quick smoke run:
 
 ```bash
-python3 scripts/evaluate_dakshina.py --download-dakshina --limit 512
+python3 scripts/evaluate_dakshina.py --limit 512
+```
+
+Compare rescoring latency and accuracy:
+
+```bash
+python3 scripts/evaluate_dakshina.py --limit 512 --rescore --output artifacts/dakshina_hi_rescore_on.json
+python3 scripts/evaluate_dakshina.py --limit 512 --no-rescore --output artifacts/dakshina_hi_rescore_off.json
+```
+
+Prometheus metrics for rescoring CPU cost:
+
+```text
+indicxlit_rescore_parse_duration_seconds
+indicxlit_rescore_rerank_duration_seconds
+indicxlit_rescore_encode_duration_seconds
+indicxlit_rescore_total_duration_seconds
 ```
 
 The default output is:
@@ -90,6 +130,7 @@ python3 scripts/evaluate_dakshina.py \
   --batch-size 256 \
   --beam-width 5 \
   --topk 5 \
+  --rescore \
   --save-rows
 ```
 

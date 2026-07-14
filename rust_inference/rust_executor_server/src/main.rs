@@ -3,7 +3,7 @@ mod ffi;
 use anyhow::{anyhow, Context, Result};
 use axum::extract::State;
 use axum::http::{header, StatusCode};
-use axum::response::{IntoResponse, Response};
+use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use crossbeam_channel::{unbounded, Receiver, RecvTimeoutError, Sender};
@@ -11,11 +11,15 @@ use metrics::{counter, gauge, histogram};
 use metrics_exporter_prometheus::{PrometheusBuilder, PrometheusHandle};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::collections::HashMap;
 use std::env;
+use std::fs;
 use std::net::SocketAddr;
+use std::path::Path;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::oneshot;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 #[derive(Clone)]
 struct AppState {
@@ -25,6 +29,9 @@ struct AppState {
     default_max_tokens: i32,
     default_beam_width: i32,
     default_topk: i32,
+    default_rescore: bool,
+    rescore_alpha: f64,
+    rescore: Arc<RescoreState>,
 }
 
 struct WorkItem {
@@ -96,8 +103,121 @@ fn input_i32(req: &TritonRequest, name: &str) -> Option<i32> {
     input_string(req, name).and_then(|value| value.parse::<i32>().ok())
 }
 
+fn input_bool(req: &TritonRequest, name: &str) -> Option<bool> {
+    req.inputs
+        .iter()
+        .find(|input| input.name == name)
+        .and_then(|input| match &input.data {
+            Value::Bool(value) => Some(*value),
+            Value::Array(items) => items.first().and_then(|item| match item {
+                Value::Bool(value) => Some(*value),
+                Value::String(value) => parse_bool(value),
+                Value::Number(value) => parse_bool(&value.to_string()),
+                _ => None,
+            }),
+            Value::String(value) => parse_bool(value),
+            Value::Number(value) => parse_bool(&value.to_string()),
+            _ => None,
+        })
+}
+
+fn parse_bool(value: &str) -> Option<bool> {
+    match value.to_ascii_lowercase().as_str() {
+        "1" | "true" | "yes" | "on" => Some(true),
+        "0" | "false" | "no" | "off" => Some(false),
+        _ => None,
+    }
+}
+
+struct RescoreState {
+    dictionaries: HashMap<String, HashMap<String, f64>>,
+}
+
+impl RescoreState {
+    fn load(asset_root: &str) -> Self {
+        let dict_root = Path::new(asset_root).join("word_prob_dicts");
+        let mut dictionaries = HashMap::new();
+        let Ok(entries) = fs::read_dir(&dict_root) else {
+            warn!(path = %dict_root.display(), "rescoring dictionaries not found; preserving beam order");
+            return Self { dictionaries };
+        };
+
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let Some(name) = path.file_name().and_then(|value| value.to_str()) else {
+                continue;
+            };
+            let Some(lang) = name.strip_suffix("_word_prob_dict.json") else {
+                continue;
+            };
+            match fs::read_to_string(&path)
+                .with_context(|| format!("failed to read {}", path.display()))
+                .and_then(|text| serde_json::from_str::<HashMap<String, f64>>(&text).context("failed to parse word probability JSON"))
+            {
+                Ok(dict) => {
+                    info!(lang, entries = dict.len(), "loaded rescoring dictionary");
+                    dictionaries.insert(lang.to_string(), dict);
+                }
+                Err(error) => {
+                    warn!(lang, path = %path.display(), %error, "failed to load rescoring dictionary");
+                }
+            }
+        }
+        Self { dictionaries }
+    }
+
+    fn enabled(&self, lang: &str) -> bool {
+        self.dictionaries.get(lang).is_some_and(|dict| !dict.is_empty())
+    }
+
+    fn rescore_candidates(&self, lang: &str, candidates: &mut [String], alpha: f64) -> bool {
+        if candidates.len() <= 1 {
+            return false;
+        }
+        let Some(dict) = self.dictionaries.get(lang) else {
+            return false;
+        };
+        if dict.is_empty() {
+            return false;
+        }
+
+        let total_prob: f64 = candidates.iter().filter_map(|candidate| dict.get(candidate)).sum();
+        let beam_total: f64 = (1..=candidates.len()).map(|rank| 1.0 / rank as f64).sum();
+        let mut scored = candidates
+            .iter()
+            .enumerate()
+            .map(|(index, candidate)| {
+                let beam_score = (1.0 / (index + 1) as f64) / beam_total;
+                let dict_score = if total_prob > 0.0 {
+                    dict.get(candidate).copied().unwrap_or(0.0) / total_prob
+                } else {
+                    0.0
+                };
+                let score = alpha * beam_score + (1.0 - alpha) * dict_score;
+                (index, score, candidate.clone())
+            })
+            .collect::<Vec<_>>();
+
+        scored.sort_by(|left, right| {
+            right
+                .1
+                .partial_cmp(&left.1)
+                .unwrap_or(std::cmp::Ordering::Equal)
+                .then_with(|| left.0.cmp(&right.0))
+        });
+        for (slot, (_, _, candidate)) in candidates.iter_mut().zip(scored) {
+            *slot = candidate;
+        }
+        true
+    }
+}
+
 async fn health() -> Json<Value> {
     Json(json!({"health": "ready"}))
+}
+
+async fn demo_page() -> Html<&'static str> {
+    Html(include_str!("index.html"))
 }
 
 async fn metrics_endpoint(State(state): State<AppState>) -> Response {
@@ -129,13 +249,14 @@ async fn infer(
     let max_tokens = input_i32(&req, "max_tokens").unwrap_or(state.default_max_tokens);
     let beam_width = input_i32(&req, "beam_width").unwrap_or(state.default_beam_width);
     let topk = input_i32(&req, "topk").unwrap_or(state.default_topk);
+    let rescore = input_bool(&req, "rescore").unwrap_or(state.default_rescore);
 
     let (response_tx, response_rx) = oneshot::channel();
     state
         .tx
         .send(WorkItem {
             words,
-            target_lang,
+            target_lang: target_lang.clone(),
             max_tokens,
             beam_width,
             topk,
@@ -152,21 +273,65 @@ async fn infer(
         (StatusCode::SERVICE_UNAVAILABLE, "batch worker dropped response".to_string())
     })?;
     let worker_label = format!("worker-{}", work_result.worker_id);
-    let candidates = work_result.result.map_err(|error| {
+    let candidate_json = work_result.result.map_err(|error| {
         record_http_metrics("error", &worker_label, word_count, request_started.elapsed());
         (StatusCode::INTERNAL_SERVER_ERROR, error)
     })?;
 
-    let best: Vec<String> = candidates
+    let rescore_stage_started = Instant::now();
+    let mut candidates = candidate_json
         .iter()
-        .map(|candidate_json| {
-            serde_json::from_str::<Vec<String>>(candidate_json)
-                .ok()
-                .and_then(|values| values.into_iter().next())
-                .unwrap_or_default()
-        })
-        .collect();
-    let output_count = candidates.len();
+        .map(|value| serde_json::from_str::<Vec<String>>(value).unwrap_or_default())
+        .collect::<Vec<_>>();
+    let parse_elapsed = rescore_stage_started.elapsed();
+    let rescore_available = state.rescore.enabled(&target_lang);
+    let apply_rescore = rescore && rescore_available;
+    let mut rescored_rows = 0usize;
+    let rerank_started = Instant::now();
+    if apply_rescore {
+        for row in &mut candidates {
+            if state.rescore.rescore_candidates(&target_lang, row, state.rescore_alpha) {
+                rescored_rows += 1;
+            }
+        }
+    }
+    let rerank_elapsed = rerank_started.elapsed();
+
+    let best: Vec<String> = candidates.iter().map(|values| values.first().cloned().unwrap_or_default()).collect();
+    let encode_started = Instant::now();
+    let candidates_json = if apply_rescore {
+        candidates
+            .iter()
+            .map(|values| serde_json::to_string(values).unwrap_or_else(|_| "[]".to_string()))
+            .collect::<Vec<_>>()
+    } else {
+        candidate_json
+    };
+    let encode_elapsed = encode_started.elapsed();
+    let rescore_status = if apply_rescore {
+        "applied"
+    } else if rescore {
+        "missing_dict"
+    } else {
+        "disabled"
+    };
+    counter!(
+        "indicxlit_rescore_rows_total",
+        "status" => rescore_status,
+        "lang" => target_lang.clone()
+    )
+    .increment(if apply_rescore { rescored_rows as u64 } else { word_count as u64 });
+    record_rescore_metrics(
+        rescore_status,
+        &target_lang,
+        word_count,
+        topk.max(0) as usize,
+        parse_elapsed,
+        rerank_elapsed,
+        encode_elapsed,
+        rescore_stage_started.elapsed(),
+    );
+    let output_count = candidates_json.len();
     record_http_metrics("ok", &worker_label, output_count, request_started.elapsed());
 
     Ok(Json(json!({
@@ -182,7 +347,7 @@ async fn infer(
                 name: "candidates_json",
                 datatype: "BYTES",
                 shape: [output_count, 1],
-                data: candidates,
+                data: candidates_json,
             }
         ]
     })))
@@ -229,6 +394,28 @@ fn record_batch_metrics(
         .record(elapsed.as_secs_f64());
     histogram!("indicxlit_batch_requests", "status" => status, "mode" => mode, "worker" => worker.to_string()).record(request_count as f64);
     histogram!("indicxlit_batch_words", "status" => status, "mode" => mode, "worker" => worker.to_string()).record(word_count as f64);
+}
+
+fn record_rescore_metrics(
+    status: &'static str,
+    lang: &str,
+    words: usize,
+    topk: usize,
+    parse_elapsed: Duration,
+    rerank_elapsed: Duration,
+    encode_elapsed: Duration,
+    total_elapsed: Duration,
+) {
+    histogram!("indicxlit_rescore_parse_duration_seconds", "status" => status, "lang" => lang.to_string())
+        .record(parse_elapsed.as_secs_f64());
+    histogram!("indicxlit_rescore_rerank_duration_seconds", "status" => status, "lang" => lang.to_string())
+        .record(rerank_elapsed.as_secs_f64());
+    histogram!("indicxlit_rescore_encode_duration_seconds", "status" => status, "lang" => lang.to_string())
+        .record(encode_elapsed.as_secs_f64());
+    histogram!("indicxlit_rescore_total_duration_seconds", "status" => status, "lang" => lang.to_string())
+        .record(total_elapsed.as_secs_f64());
+    histogram!("indicxlit_rescore_words", "status" => status, "lang" => lang.to_string()).record(words as f64);
+    histogram!("indicxlit_rescore_topk", "status" => status, "lang" => lang.to_string()).record(topk as f64);
 }
 
 fn run_batcher(
@@ -368,6 +555,21 @@ fn env_i32(name: &str, default: i32) -> i32 {
     env::var(name).ok().and_then(|value| value.parse().ok()).unwrap_or(default)
 }
 
+fn env_bool(name: &str, default: bool) -> bool {
+    env::var(name)
+        .ok()
+        .and_then(|value| match value.to_ascii_lowercase().as_str() {
+            "1" | "true" | "yes" | "on" => Some(true),
+            "0" | "false" | "no" | "off" => Some(false),
+            _ => None,
+        })
+        .unwrap_or(default)
+}
+
+fn env_f64(name: &str, default: f64) -> f64 {
+    env::var(name).ok().and_then(|value| value.parse().ok()).unwrap_or(default)
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt()
@@ -380,7 +582,7 @@ async fn main() -> Result<()> {
 
     let engine_dir = env_string_any(
         &["INDICXLIT_ENGINE_DIR", "ENGINE_DIR"],
-        "/models/engines/en_hi_beam5_fp16_b256_paged_kv",
+        "/models/engines/en_hi_beam5_fp16_b256_continuous_decoder_kv",
     );
     let asset_root = env_string("INDICXLIT_MODEL_ROOT", "/models/assets/en2indic");
     let host = env_string("INDICXLIT_HOST", "0.0.0.0");
@@ -391,6 +593,9 @@ async fn main() -> Result<()> {
     let batch_delay_us = env_i32("INDICXLIT_BATCH_DELAY_US", 2000);
     let use_static_scheduler = env_i32("INDICXLIT_STATIC_SCHEDULER", 1) != 0;
     let worker_count = env_i32("INDICXLIT_WORKERS", 2).max(1) as usize;
+    let default_rescore = env_bool("INDICXLIT_RESCORE", true);
+    let rescore_alpha = env_f64("INDICXLIT_RESCORE_ALPHA", 0.9).clamp(0.0, 1.0);
+    let rescore = Arc::new(RescoreState::load(&asset_root));
 
     gauge!("indicxlit_config_max_batch_size").set(max_batch_size as f64);
     gauge!("indicxlit_config_max_beam_width").set(max_beam_width as f64);
@@ -398,6 +603,9 @@ async fn main() -> Result<()> {
     gauge!("indicxlit_config_batch_delay_microseconds").set(batch_delay_us as f64);
     gauge!("indicxlit_config_static_scheduler").set(if use_static_scheduler { 1.0 } else { 0.0 });
     gauge!("indicxlit_config_workers").set(worker_count as f64);
+    gauge!("indicxlit_config_rescore").set(if default_rescore { 1.0 } else { 0.0 });
+    gauge!("indicxlit_config_rescore_alpha").set(rescore_alpha);
+    gauge!("indicxlit_config_rescore_dictionaries").set(rescore.dictionaries.len() as f64);
 
     let (tx, rx) = unbounded();
     for worker_id in 0..worker_count {
@@ -434,9 +642,13 @@ async fn main() -> Result<()> {
         default_max_tokens: env_i32("INDICXLIT_MAX_TOKENS", 32),
         default_beam_width: env_i32("INDICXLIT_BEAM_WIDTH", 5),
         default_topk: env_i32("INDICXLIT_TOPK", 5),
+        default_rescore,
+        rescore_alpha,
+        rescore,
     };
 
     let app = Router::new()
+        .route("/", get(demo_page))
         .route("/v2/health/ready", get(health))
         .route("/metrics", get(metrics_endpoint))
         .route("/v2/models/indicxlit/infer", post(infer))
