@@ -9,6 +9,8 @@ IMAGE_TAG="${IMAGE_TAG:-indicxlit-rust-inference:continuous-decoder-kv}"
 BASE_IMAGE="${BASE_IMAGE:-nvcr.io/nvidia/tritonserver:26.02-trtllm-python-py3}"
 ENGINE_DIR="${ENGINE_DIR:-${PROJECT_DIR}/engines/en_hi_beam5_fp16_b256_continuous_decoder_kv}"
 MODEL_ASSET_DIR="${MODEL_ASSET_DIR:-${REPO_ROOT}/app/ai4bharat/transliteration/transformer/models/en2indic}"
+MODEL_ASSETS_URL="${MODEL_ASSETS_URL:-https://github.com/AI4Bharat/IndicXlit/releases/download/v1.0/indicxlit-en-indic-v1.0.zip}"
+MODEL_ASSETS_ARCHIVE="${MODEL_ASSETS_ARCHIVE:-${PROJECT_DIR}/artifacts/downloads/indicxlit-en-indic-v1.0.zip}"
 RESCORE_DICTS_URL="${RESCORE_DICTS_URL:-https://github.com/AI4Bharat/IndicXlit/releases/download/v1.0/word_prob_dicts.zip}"
 RESCORE_DICTS_ARCHIVE="${RESCORE_DICTS_ARCHIVE:-${PROJECT_DIR}/artifacts/downloads/word_prob_dicts.zip}"
 RESCORE_DICTS_DIR="${RESCORE_DICTS_DIR:-${PROJECT_DIR}/artifacts/word_prob_dicts}"
@@ -52,8 +54,33 @@ if [[ ! -f "${MODEL_ASSET_DIR}/lang_list.txt" ]]; then
   exit 1
 fi
 
-if [[ ! -d "${MODEL_ASSET_DIR}/v1.0/corpus-bin" ]]; then
-  echo "Missing fairseq dictionaries at ${MODEL_ASSET_DIR}/v1.0/corpus-bin" >&2
+if [[ ! -f "${MODEL_ASSET_DIR}/v1.0/corpus-bin/dict.en.txt" ]]; then
+  mkdir -p "$(dirname "${MODEL_ASSETS_ARCHIVE}")"
+  if [[ ! -f "${MODEL_ASSETS_ARCHIVE}" ]]; then
+    echo "Downloading IndicXlit model assets from ${MODEL_ASSETS_URL}"
+    if command -v curl >/dev/null 2>&1; then
+      curl -fL "${MODEL_ASSETS_URL}" -o "${MODEL_ASSETS_ARCHIVE}"
+    elif command -v wget >/dev/null 2>&1; then
+      wget -O "${MODEL_ASSETS_ARCHIVE}" "${MODEL_ASSETS_URL}"
+    else
+      echo "Missing downloader: install curl or wget." >&2
+      exit 1
+    fi
+  fi
+
+  model_assets_extract_dir="$(mktemp -d /tmp/indicxlit-model-assets.XXXXXX)"
+  python3 -m zipfile -e "${MODEL_ASSETS_ARCHIVE}" "${model_assets_extract_dir}"
+  downloaded_corpus_dir="$(find "${model_assets_extract_dir}" -type f -path '*/corpus-bin/dict.en.txt' -print -quit)"
+  if [[ -n "${downloaded_corpus_dir}" ]]; then
+    downloaded_corpus_dir="$(dirname "${downloaded_corpus_dir}")"
+    mkdir -p "${MODEL_ASSET_DIR}/v1.0/corpus-bin"
+    cp -a "${downloaded_corpus_dir}/." "${MODEL_ASSET_DIR}/v1.0/corpus-bin/"
+  fi
+  rm -rf "${model_assets_extract_dir}"
+fi
+
+if [[ ! -f "${MODEL_ASSET_DIR}/v1.0/corpus-bin/dict.en.txt" ]]; then
+  echo "Missing fairseq dictionaries at ${MODEL_ASSET_DIR}/v1.0/corpus-bin after extracting ${MODEL_ASSETS_ARCHIVE}" >&2
   exit 1
 fi
 
